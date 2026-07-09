@@ -27,10 +27,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ erro: "Conteúdo editado inválido", codigo: "briefing" }, { status: 400 });
   }
 
-  // Herda o briefing do deck de origem
+  // Herda briefing e visibilidade do deck de origem
   const { data: origem } = await supabase
     .from("decks")
-    .select("briefing")
+    .select("briefing, visibilidade")
     .eq("id", body.sourceId)
     .single();
   if (!origem) {
@@ -52,6 +52,7 @@ export async function POST(request: Request) {
       slides: body.deck.slides,
       html,
       origem: "edicao",
+      visibilidade: origem.visibilidade,
     })
     .select("id")
     .single();

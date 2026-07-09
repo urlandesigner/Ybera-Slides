@@ -5,7 +5,7 @@ import { BrandPicker } from "@/components/BrandPicker";
 import { DeckPreview } from "@/components/DeckPreview";
 import { Field, inputClass } from "@/components/Field";
 import { Toast } from "@/components/Toast";
-import type { Marca, Modo } from "@/lib/schema";
+import type { Marca, Modo, Visibilidade } from "@/lib/schema";
 
 type Fase = "formulario" | "gerando" | "pronto";
 
@@ -29,6 +29,11 @@ const TAMANHOS: { value: 10 | 14 | 18; label: string }[] = [
   { value: 18, label: "~18 SLIDES" },
 ];
 
+const VISIBILIDADES: { value: Visibilidade; label: string }[] = [
+  { value: "publica", label: "PÚBLICA" },
+  { value: "restrita", label: "RESTRITA" },
+];
+
 const MINIMO_CONTEUDO = 40;
 
 export function GeneratorClient() {
@@ -38,6 +43,7 @@ export function GeneratorClient() {
   const [publico, setPublico] = useState("");
   const [numSlides, setNumSlides] = useState<10 | 14 | 18>(14);
   const [conteudo, setConteudo] = useState("");
+  const [visibilidade, setVisibilidade] = useState<Visibilidade>("publica");
 
   const [fase, setFase] = useState<Fase>("formulario");
   const [resultado, setResultado] = useState<Resultado | null>(null);
@@ -71,7 +77,7 @@ export function GeneratorClient() {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ marca, modo, assunto, publico, numSlides, conteudo }),
+        body: JSON.stringify({ marca, modo, assunto, publico, numSlides, conteudo, visibilidade }),
       });
       const body = await res.json().catch(() => null);
       if (res.ok && body?.html) {
@@ -227,6 +233,19 @@ export function GeneratorClient() {
         >
           {tamanhoConteudo} CARACTERES{tamanhoConteudo < MINIMO_CONTEUDO ? ` · MÍNIMO ${MINIMO_CONTEUDO}` : ""}
         </p>
+      </Field>
+
+      <Field
+        numero="07"
+        label="VISIBILIDADE"
+        hint="Pública: entra no repositório da equipe. Restrita: só você vê, na tela Minhas. Dá para mudar depois."
+      >
+        <BrandPicker
+          name="Visibilidade"
+          options={VISIBILIDADES}
+          value={visibilidade}
+          onChange={setVisibilidade}
+        />
       </Field>
 
       <div className="flex items-center gap-5 pl-14">

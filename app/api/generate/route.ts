@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { briefingSchema } from "@/lib/schema";
+import { briefingSchema, visibilidadeSchema } from "@/lib/schema";
 import { generateDeck, GenerationError } from "@/lib/anthropic";
 import { renderDeck } from "@/lib/renderer";
 import { createClient } from "@/lib/supabase/server";
@@ -20,10 +20,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ erro: "Sessão expirada. Entre de novo.", codigo: "sessao" }, { status: 401 });
   }
 
-  // 2. Briefing válido
+  // 2. Briefing válido (+ visibilidade, que não vai para a IA)
   let briefing;
+  let visibilidade;
   try {
-    briefing = briefingSchema.parse(await request.json());
+    const body = briefingSchema
+      .extend({ visibilidade: visibilidadeSchema.default("publica") })
+      .parse(await request.json());
+    ({ visibilidade, ...briefing } = body);
   } catch {
     return NextResponse.json({ erro: "Briefing incompleto ou inválido", codigo: "briefing" }, { status: 400 });
   }
@@ -81,6 +85,7 @@ export async function POST(request: Request) {
       slides: deck.slides,
       html,
       origem: "geracao",
+      visibilidade,
     })
     .select("id")
     .single();

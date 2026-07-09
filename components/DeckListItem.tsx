@@ -13,12 +13,14 @@ export function DeckListItem({
   marca,
   autorEmail,
   createdAt,
+  visibilidade,
 }: {
   id: string;
   titulo: string;
   marca: string;
   autorEmail: string;
   createdAt: string;
+  visibilidade?: string; // quando presente, mostra o selo (tela Minhas)
 }) {
   const info = MARCAS[marca] ?? { rotulo: marca.toUpperCase(), cor: "var(--color-tinta4)" };
   const dt = new Date(createdAt);
@@ -36,6 +38,12 @@ export function DeckListItem({
           {info.rotulo}
         </span>
         <span className="truncate font-display text-base text-tinta">{titulo}</span>
+        {visibilidade === "restrita" ? (
+          <span className="flex shrink-0 items-center gap-2 rounded-full border border-fio18 px-3 py-1 font-mono text-[11px] tracking-[0.12em] text-tinta4">
+            <span aria-hidden className="h-1.5 w-1.5 rounded-full border border-fio25" />
+            RESTRITA
+          </span>
+        ) : null}
       </div>
       <div className="flex shrink-0 items-baseline gap-6 font-mono text-xs text-tinta4">
         <span className="hidden sm:inline">{autorEmail}</span>

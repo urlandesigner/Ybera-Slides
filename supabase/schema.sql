@@ -12,16 +12,17 @@ create table if not exists decks (
   slides jsonb not null,
   html text not null,
   origem text not null default 'geracao', -- 'geracao' (conta na cota diária) | 'edicao'
+  visibilidade text not null default 'publica', -- 'publica' (repositório da equipe) | 'restrita' (só o autor)
   created_at timestamptz default now()
 );
 
 alter table decks enable row level security;
 
--- Histórico é da empresa toda: select para qualquer usuário autenticado
-create policy "decks_select_autenticados"
+-- Públicas para qualquer autenticado; restritas só para o autor
+create policy "decks_select_visiveis"
   on decks for select
   to authenticated
-  using (true);
+  using (visibilidade = 'publica' or user_id = auth.uid());
 
 -- Insert apenas com o próprio user_id
 create policy "decks_insert_proprio"
@@ -29,7 +30,14 @@ create policy "decks_insert_proprio"
   to authenticated
   with check (user_id = auth.uid());
 
--- Sem update/delete na v1 (nenhuma policy criada = negado por padrão)
+-- Dono pode atualizar (o app só expõe a troca de visibilidade)
+create policy "decks_update_dono"
+  on decks for update
+  to authenticated
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid());
+
+-- Sem delete na v1 (nenhuma policy = negado por padrão)
 
 create index if not exists decks_created_at_idx on decks (created_at desc);
 create index if not exists decks_user_dia_idx on decks (user_id, created_at);

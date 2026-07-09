@@ -122,6 +122,8 @@ export const slideSchema = z.discriminatedUnion("layout", [
 
 export const marcaSchema = z.enum(["group", "ybera", "club", "pro"]);
 export const modoSchema = z.enum(["dark", "light"]);
+export const visibilidadeSchema = z.enum(["publica", "restrita"]);
+export type Visibilidade = z.infer<typeof visibilidadeSchema>;
 
 export const deckSchema = z.object({
   titulo: z.string(),

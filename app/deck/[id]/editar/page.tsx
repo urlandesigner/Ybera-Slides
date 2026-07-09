@@ -29,7 +29,7 @@ export default async function EditarDeckPage({ params }: { params: Promise<{ id:
   if (!parsed.success) notFound();
 
   return (
-    <AppShell email={user.email ?? ""} active="historico">
+    <AppShell email={user.email ?? ""} active="minhas">
       <div className="mb-8 flex flex-col gap-2">
         <Link
           href={`/deck/${row.id}`}

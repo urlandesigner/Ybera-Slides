@@ -29,7 +29,7 @@ export function AppShell({
   children,
 }: {
   email: string;
-  active: "nova" | "historico";
+  active: "nova" | "repositorio" | "minhas";
   children: React.ReactNode;
 }) {
   return (
@@ -47,8 +47,11 @@ export function AppShell({
               <NavLink href="/" ativo={active === "nova"}>
                 NOVA
               </NavLink>
-              <NavLink href="/historico" ativo={active === "historico"}>
-                HISTÓRICO
+              <NavLink href="/repositorio" ativo={active === "repositorio"}>
+                REPOSITÓRIO
+              </NavLink>
+              <NavLink href="/minhas" ativo={active === "minhas"}>
+                MINHAS
               </NavLink>
             </nav>
           </div>
