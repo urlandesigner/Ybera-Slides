@@ -28,19 +28,44 @@
   --font-mono: var(--font-dm-mono), monospace;
 }
 
-html {
+/* ---- Tema em runtime: dark é o padrão; light espelha o data-tom="light"
+       do template de referência. O toggle grava data-tema no <html>. ---- */
+:root {
   color-scheme: dark;
+  --grad-topo: rgb(10, 10, 11);
+  --selecao: rgba(250, 249, 252, 0.2);
+}
+
+:root[data-tema="light"] {
+  color-scheme: light;
+  --grad-topo: rgb(255, 255, 255);
+  --selecao: rgba(5, 5, 5, 0.12);
+
+  --color-fundo: rgb(250, 249, 252);
+  --color-painel: rgb(243, 242, 246);
+  --color-tinta: rgb(5, 5, 5);
+  --color-tinta2: rgb(48, 48, 50);
+  --color-tinta3: rgb(108, 107, 110);
+  --color-tinta4: rgb(148, 147, 150);
+  --color-fio: rgba(5, 5, 5, 0.07);
+  --color-fio18: rgba(5, 5, 5, 0.2);
+  --color-fio25: rgba(5, 5, 5, 0.28);
+  --color-erro: rgb(186, 44, 70);
+
+  /* Acentos por marca no light (mesmos valores do template) */
+  --color-marca-group: rgb(90, 89, 92);
+  --color-marca-ybera: rgb(108, 107, 110);
 }
 
 body {
   /* Vinheta sutil no topo — profundidade sem quebrar a sobriedade */
-  background: linear-gradient(to bottom, rgb(10, 10, 11), var(--color-fundo) 360px) fixed;
+  background: linear-gradient(to bottom, var(--grad-topo), var(--color-fundo) 360px) fixed;
   color: var(--color-tinta);
   font-family: var(--font-nunito), sans-serif;
 }
 
 ::selection {
-  background: rgba(250, 249, 252, 0.2);
+  background: var(--selecao);
 }
 
 /* Foco visível consistente (teclado) sem poluir o clique */

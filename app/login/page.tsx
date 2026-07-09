@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { createClient } from "@/lib/supabase/server";
 import { LoginForm } from "./login-form";
 
@@ -23,7 +24,10 @@ export default async function LoginPage({
   const ano = new Date().getFullYear();
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-6">
+    <div className="relative flex min-h-screen items-center justify-center px-6">
+      <div className="absolute right-6 top-6">
+        <ThemeToggle />
+      </div>
       <div className="surgir w-full max-w-md">
         {/* Eco da capa dos decks: selo com ponto de acento + display Syne */}
         <div className="mb-12 flex flex-col gap-6">

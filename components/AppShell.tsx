@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 function NavLink({ href, ativo, children }: { href: string; ativo: boolean; children: string }) {
   return (
@@ -50,7 +51,8 @@ export function AppShell({
               </NavLink>
             </nav>
           </div>
-          <div className="flex items-baseline gap-5">
+          <div className="flex items-center gap-5">
+            <ThemeToggle />
             <span className="hidden font-mono text-xs text-tinta4 md:inline">{email}</span>
             <form action="/api/auth/logout" method="post">
               <button

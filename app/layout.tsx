@@ -27,8 +27,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${syne.variable} ${nunitoSans.variable} ${dmMono.variable} antialiased`}>
+        {/* Aplica o tema salvo antes da pintura — evita flash de tema errado */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem("tema")==="light")document.documentElement.dataset.tema="light"}catch(e){}`,
+          }}
+        />
         {children}
       </body>
     </html>
