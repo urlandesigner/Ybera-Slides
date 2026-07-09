@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Template de Apresentações — Grupo Ybera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TEMPLATE DE APRESENTAÇÕES — GRUPO YBERA
+   Arquivo de referência para o Claude reproduzir.
+   Slides: 1920×1080. Tema via data-marca / data-tom no <body>.
+   ============================================================ */
+
+/* ---------- TOKENS DE MODO (fundo e tinta) ----------
+   Atributos data-marca / data-tom ficam no <body> (nomes próprios,
+   para não conflitar com data-theme que o navegador/host pode usar). */
+body[data-tom="dark"] {
+  --bg: rgb(5,5,5);
+  --ink: rgb(250,249,252);
+  --ink2: rgb(224,223,226);
+  --ink3: rgb(176,175,178);
+  --hairline: rgba(250,249,252,0.06);
+  --line18: rgba(250,249,252,0.18);
+  --line25: rgba(250,249,252,0.25);
+  --line35: rgba(250,249,252,0.35);
+}
+body[data-tom="light"] {
+  --bg: rgb(250,249,252);
+  --ink: rgb(5,5,5);
+  --ink2: rgb(48,48,50);
+  --ink3: rgb(108,107,110);
+  --hairline: rgba(5,5,5,0.07);
+  --line18: rgba(5,5,5,0.2);
+  --line25: rgba(5,5,5,0.28);
+  --line35: rgba(5,5,5,0.38);
+}
+
+/* ---------- TOKENS DE TEMA (marca) ---------- */
+body[data-marca="group"][data-tom="dark"]  { --accent: rgb(201,200,204); --accent-border: rgb(108,107,110); --sep-bg: rgb(226,225,229); --sep-text: rgb(5,5,5); }
+body[data-marca="group"][data-tom="light"] { --accent: rgb(90,89,92);    --accent-border: rgb(176,175,178); --sep-bg: rgb(30,30,31);    --sep-text: rgb(250,249,252); }
+body[data-marca="ybera"][data-tom="dark"]  { --accent: rgb(176,175,178); --accent-border: rgb(108,107,110); --sep-bg: rgb(236,235,240); --sep-text: rgb(5,5,5); }
+body[data-marca="ybera"][data-tom="light"] { --accent: rgb(108,107,110); --accent-border: rgb(176,175,178); --sep-bg: rgb(30,30,31);    --sep-text: rgb(250,249,252); }
+body[data-marca="club"][data-tom="dark"]   { --accent: rgb(199,15,67);   --accent-border: rgb(152,11,56);   --sep-bg: rgb(199,15,67);   --sep-text: rgb(255,255,255); }
+body[data-marca="club"][data-tom="light"]  { --accent: rgb(199,15,67);   --accent-border: rgb(235,153,177); --sep-bg: rgb(199,15,67);   --sep-text: rgb(255,255,255); }
+body[data-marca="pro"][data-tom="dark"]    { --accent: #1F6665;          --accent-border: #104443;          --sep-bg: #1F6665;          --sep-text: #FFFFFF; }
+body[data-marca="pro"][data-tom="light"]   { --accent: #1F6665;          --accent-border: #8FB8B7;          --sep-bg: #1F6665;          --sep-text: #FFFFFF; }
+
+/* ---------- TIPOGRAFIA ---------- */
+.f-display { font-family: 'Syne', sans-serif; font-weight: 600; letter-spacing: -0.01em; }
+.f-body    { font-family: 'Nunito Sans', sans-serif; }
+.f-mono    { font-family: 'DM Mono', monospace; }
+
+.kicker  { font-family: 'DM Mono', monospace; font-size: 24px; letter-spacing: 0.12em; color: var(--accent); }
+.pagenum { font-family: 'DM Mono', monospace; font-size: 24px; letter-spacing: 0.08em; color: var(--ink3); }
+
+/* ---------- ESTRUTURA DO SLIDE ---------- */
+.slide {
+  width: 1920px; height: 1080px;
+  position: relative; overflow: hidden;
+  background: var(--bg); color: var(--ink);
+  font-family: 'Nunito Sans', sans-serif;
+  box-sizing: border-box;
+}
+.frame {
+  position: absolute; inset: 0; box-sizing: border-box;
+  padding: 100px 120px 88px 120px;
+  display: flex; flex-direction: column;
+}
+.header-row { display: flex; justify-content: space-between; align-items: baseline; }
+
+/* Slide de separador usa cores próprias */
+.slide.separador { background: var(--sep-bg); color: var(--sep-text); }
+
+/* Placeholder de imagem (substituir por <img> real quando houver) */
+.img-placeholder {
+  width: 100%; height: 100%; border-radius: 16px; box-sizing: border-box;
+  border: 1px dashed var(--line35);
+  background: repeating-linear-gradient(45deg, transparent, transparent 24px, var(--hairline) 24px, var(--hairline) 48px);
+  display: flex; align-items: center; justify-content: center;
+}
+.img-placeholder span { font-family: 'DM Mono', monospace; font-size: 24px; color: var(--ink3); }
+
+/* ---------- IMPRESSÃO (Ctrl/Cmd+P → 1 página por slide) ---------- */
+@media print {
+  @page { size: 1920px 1080px; margin: 0; }
+  #hud, #contador { display: none !important; }
+  body { overflow: visible !important; background: var(--bg) !important; }
+  #stage { position: static !important; display: block !important; }
+  #stage .slide { display: block !important; transform: none !important; break-after: page; }
+}
+
+/* ---------- VISUALIZADOR (apenas para pré-visualização; não faz parte do padrão) ---------- */
+body { margin: 0; background: rgb(14,14,16); min-height: 100vh; overflow: hidden; }
+#stage { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+#stage .slide { display: none; flex-shrink: 0; transform-origin: center center; }
+#stage .slide.ativo { display: block; }
+/* ---- HUD: botão de engrenagem + drawer ---- */
+#hud {
+  position: fixed; top: 16px; right: 16px; z-index: 10;
+  font-family: 'DM Mono', monospace; font-size: 13px; color: rgb(176,175,178);
+}
+#btn-config {
+  width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+  background: rgba(30,30,31,0.85); color: rgb(176,175,178); border: 1px solid rgb(60,60,62);
+  border-radius: 999px; font-size: 18px; cursor: pointer; opacity: 0.35; transition: opacity 0.2s, border-color 0.2s;
+}
+#btn-config:hover, body.drawer-aberto #btn-config { opacity: 1; border-color: rgb(108,107,110); }
+#drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 20;
+  width: 280px; box-sizing: border-box; padding: 24px;
+  display: flex; flex-direction: column; gap: 20px;
+  background: rgb(22,22,24); border-left: 1px solid rgb(50,50,52);
+  font-family: 'DM Mono', monospace; font-size: 13px; color: rgb(176,175,178);
+  transform: translateX(100%); transition: transform 0.25s ease;
+}
+body.drawer-aberto #drawer { transform: translateX(0); }
+#drawer h3 { margin: 0; font-size: 13px; font-weight: 500; letter-spacing: 0.12em; color: rgb(224,223,226); }
+#drawer label { display: flex; flex-direction: column; gap: 8px; letter-spacing: 0.08em; }
+#drawer select {
+  background: rgb(30,30,31); color: rgb(224,223,226); border: 1px solid rgb(60,60,62);
+  border-radius: 8px; padding: 8px 10px; font: inherit;
+}
+#btn-tela {
+  background: rgb(30,30,31); color: rgb(224,223,226); border: 1px solid rgb(60,60,62);
+  border-radius: 8px; padding: 10px 12px; font: inherit; cursor: pointer; text-align: left;
+}
+#btn-tela:hover { border-color: rgb(108,107,110); }
+#btn-fechar {
+  position: absolute; top: 16px; right: 16px;
+  background: none; border: none; color: rgb(108,107,110); font-size: 18px; cursor: pointer; padding: 4px;
+}
+#btn-fechar:hover { color: rgb(224,223,226); }
+/* Em tela cheia, esconde tudo do visualizador */
+:fullscreen #hud, :fullscreen #contador, :fullscreen #drawer { display: none; }
+#contador {
+  position: fixed; bottom: 16px; right: 16px; z-index: 10;
+  font-family: 'DM Mono', monospace; font-size: 13px; color: rgb(108,107,110);
+}
+</style>
+</head>
+<body data-marca="group" data-tom="dark">
+
+<div id="hud">
+  <button id="btn-config" title="Configurações" aria-label="Configurações">⚙</button>
+</div>
+<div id="drawer" aria-label="Configurações">
+  <button id="btn-fechar" title="Fechar" aria-label="Fechar">×</button>
+  <h3>CONFIGURAÇÕES</h3>
+  <label>MARCA
+    <select id="sel-tema" aria-label="Tema">
+      <option value="group">Grupo</option>
+      <option value="ybera">Ybera</option>
+      <option value="club">Club</option>
+      <option value="pro">PRO</option>
+    </select>
+  </label>
+  <label>MODO
+    <select id="sel-modo" aria-label="Modo">
+      <option value="dark">Dark</option>
+      <option value="light">Light</option>
+    </select>
+  </label>
+  <button id="btn-tela" title="Tela cheia (F)">⛶ Tela cheia · F</button>
+</div>
+<div id="contador"></div>
+
+<div id="stage">
+
+<!-- ============ 01 · CAPA ============ -->
+<section class="slide ativo" data-layout="capa">
+  <div class="frame">
+    <div style="display: flex; align-items: flex-start; justify-content: space-between;">
+      <div style="display: flex; align-items: center; min-height: 92px;"><img data-logo alt="Logo" style="display: block; height: 92px; width: auto; margin-left: -12px;"></div>
+      <div style="display: flex; align-items: center; gap: 12px; border: 1px solid var(--accent-border); border-radius: 999px; padding: 12px 28px;">
+        <span style="width: 12px; height: 12px; border-radius: 999px; background: var(--accent); display: block;"></span>
+        <span class="f-mono" style="font-size: 24px; letter-spacing: 0.12em; color: var(--accent);">APRESENTAÇÃO · 2026</span>
+      </div>
+    </div>
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 40px; max-width: 1360px;">
+      <h1 class="f-display" style="margin: 0; font-size: 128px; line-height: 1.05; color: var(--ink); text-wrap: balance;">Título da apresentação</h1>
+      <p class="f-body" style="margin: 0; font-size: 36px; line-height: 1.4; color: var(--ink3); max-width: 980px;">Subtítulo — contexto, tema ou público desta apresentação</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 28px;">
+      <div style="border-top: 1px solid var(--line18);"></div>
+      <div class="header-row">
+        <span class="f-body" style="font-weight: 600; font-size: 26px; color: var(--ink);">Nome do apresentador</span>
+        <span class="pagenum">JULHO · 2026</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 · ÍNDICE ============ -->
+<section class="slide" data-layout="indice">
+  <div class="frame" style="flex-direction: row; gap: 80px;">
+    <div style="width: 480px; flex-shrink: 0; display: flex; flex-direction: column; justify-content: space-between;">
+      <div style="display: flex; flex-direction: column; gap: 32px;">
+        <span class="kicker">ÍNDICE</span>
+        <h2 class="f-display" style="margin: 0; font-size: 88px; line-height: 1.05; color: var(--ink);">O que vamos ver</h2>
+      </div>
+      <span class="pagenum" data-pagina>02 / 13</span>
+    </div>
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+      <div style="display: flex; align-items: baseline; gap: 48px; padding: 44px 0; border-top: 1px solid var(--line18);">
+        <span class="f-mono" style="font-size: 28px; color: var(--accent); width: 64px; flex-shrink: 0;">01</span>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <span class="f-display" style="font-size: 40px; line-height: 1.15; color: var(--ink);">Introdução</span>
+          <span class="f-body" style="font-size: 26px; line-height: 1.4; color: var(--ink3);">Contexto e objetivos desta apresentação</span>
+        </div>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 48px; padding: 44px 0; border-top: 1px solid var(--line18);">
+        <span class="f-mono" style="font-size: 28px; color: var(--accent); width: 64px; flex-shrink: 0;">02</span>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <span class="f-display" style="font-size: 40px; line-height: 1.15; color: var(--ink);">Tópico principal</span>
+          <span class="f-body" style="font-size: 26px; line-height: 1.4; color: var(--ink3);">O tema central que será apresentado</span>
+        </div>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 48px; padding: 44px 0; border-top: 1px solid var(--line18);">
+        <span class="f-mono" style="font-size: 28px; color: var(--accent); width: 64px; flex-shrink: 0;">03</span>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <span class="f-display" style="font-size: 40px; line-height: 1.15; color: var(--ink);">Resultados</span>
+          <span class="f-body" style="font-size: 26px; line-height: 1.4; color: var(--ink3);">Dados e evidências do que foi alcançado</span>
+        </div>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 48px; padding: 44px 0; border-top: 1px solid var(--line18); border-bottom: 1px solid var(--line18);">
+        <span class="f-mono" style="font-size: 28px; color: var(--accent); width: 64px; flex-shrink: 0;">04</span>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <span class="f-display" style="font-size: 40px; line-height: 1.15; color: var(--ink);">Próximos passos</span>
+          <span class="f-body" style="font-size: 26px; line-height: 1.4; color: var(--ink3);">O que vem a seguir e como avançamos</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 · CONTEÚDO (texto + imagem) ============ -->
+<section class="slide" data-layout="conteudo">
+  <div class="frame" style="gap: 56px;">
+    <div class="header-row">
+      <span class="kicker">01 · INTRODUÇÃO</span>
+      <span class="pagenum" data-pagina>03 / 13</span>
+    </div>
+    <h2 class="f-display" style="margin: 0; font-size: 76px; line-height: 1.08; color: var(--ink); max-width: 1200px; text-wrap: balance;">Título do conteúdo deste slide</h2>
+    <div style="flex: 1; display: flex; gap: 96px; align-items: stretch; min-height: 0;">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 36px; justify-content: center; max-width: 780px;">
+        <p class="f-body" style="margin: 0; font-size: 30px; line-height: 1.55; color: var(--ink2);">Escreva aqui o parágrafo principal deste slide. Mantenha uma ideia por slide e deixe o texto respirar — duas ou três frases bastam.</p>
+        <p class="f-body" style="margin: 0; font-size: 30px; line-height: 1.55; color: var(--ink3);">Um segundo parágrafo opcional para detalhes de apoio ou um exemplo concreto.</p>
+      </div>
+      <div style="flex: 1; display: flex; align-items: center;">
+        <div class="img-placeholder"><span>imagem do conteúdo</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 · CITAÇÃO ============ -->
+<section class="slide" data-layout="citacao">
+  <div class="frame" style="justify-content: center; gap: 64px;">
+    <span class="f-display" style="font-size: 140px; line-height: 0.6; color: var(--accent);">“</span>
+    <blockquote class="f-display" style="margin: 0; font-size: 84px; line-height: 1.15; color: var(--ink); max-width: 1480px; text-wrap: balance;">A citação em destaque entra aqui — curta, memorável e com espaço para respirar.</blockquote>
+    <div style="display: flex; align-items: center; gap: 24px;">
+      <span style="width: 56px; border-top: 2px solid var(--accent);"></span>
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <span class="f-body" style="font-weight: 600; font-size: 30px; color: var(--ink);">Nome da pessoa</span>
+        <span class="f-body" style="font-size: 26px; color: var(--ink3);">Cargo ou fonte da citação</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 · SEPARADOR DE SEÇÃO ============ -->
+<section class="slide separador" data-layout="separador">
+  <div class="frame" style="justify-content: space-between;">
+    <span class="f-mono" style="font-size: 24px; letter-spacing: 0.12em; color: var(--sep-text);">SEÇÃO</span>
+    <div style="display: flex; flex-direction: column; gap: 32px;">
+      <span class="f-mono" style="font-size: 40px; letter-spacing: 0.08em; color: color-mix(in srgb, var(--sep-text) 60%, transparent);">02</span>
+      <h2 class="f-display" style="margin: 0; font-size: 140px; line-height: 1.02; color: var(--sep-text); max-width: 1480px; text-wrap: balance;">Nome da seção</h2>
+    </div>
+    <div class="header-row" style="border-top: 1px solid color-mix(in srgb, var(--sep-text) 25%, transparent); padding-top: 28px;">
+      <span class="f-body" style="font-weight: 600; font-size: 26px; color: var(--sep-text);">Uma linha sobre o que vem nesta seção</span>
+      <span class="f-mono" data-pagina style="font-size: 24px; letter-spacing: 0.08em; color: color-mix(in srgb, var(--sep-text) 60%, transparent);">05 / 13</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 · TEXTO (afirmação central) ============ -->
+<section class="slide" data-layout="texto">
+  <div class="frame" style="gap: 56px;">
+    <div class="header-row">
+      <span class="kicker">02 · TÓPICO</span>
+      <span class="pagenum" data-pagina>06 / 13</span>
+    </div>
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 48px;">
+      <p class="f-display" style="margin: 0; font-size: 72px; line-height: 1.18; color: var(--ink); max-width: 1500px; text-wrap: balance;">Uma afirmação central e direta — a ideia que este slide precisa deixar clara.</p>
+      <p class="f-body" style="margin: 0; font-size: 32px; line-height: 1.55; color: var(--ink3); max-width: 1100px;">Um parágrafo de apoio opcional para contexto, evidência ou um exemplo. Apague se a afirmação bastar sozinha.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 · IMAGEM (destaque full-bleed) ============ -->
+<section class="slide" data-layout="imagem">
+  <div style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 64px 64px 48px 64px; box-sizing: border-box; gap: 32px;">
+    <div style="flex: 1; min-height: 0;">
+      <div class="img-placeholder"><span>imagem principal</span></div>
+    </div>
+    <div class="header-row" style="padding: 0 56px;">
+      <span class="f-body" style="font-weight: 600; font-size: 28px; color: var(--ink);">Legenda da imagem — o que estamos vendo e por que importa</span>
+      <span class="pagenum" data-pagina>07 / 13</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 · CARDS (3 pontos paralelos) ============ -->
+<section class="slide" data-layout="cards">
+  <div class="frame" style="gap: 64px;">
+    <div class="header-row">
+      <span class="kicker">02 · TÓPICO</span>
+      <span class="pagenum" data-pagina>08 / 13</span>
+    </div>
+    <h2 class="f-display" style="margin: 0; font-size: 72px; line-height: 1.08; color: var(--ink); max-width: 1200px;">Três pontos em paralelo</h2>
+    <div style="flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px;">
+      <div style="border: 1px solid var(--line18); border-radius: 16px; padding: 48px; display: flex; flex-direction: column; gap: 24px;">
+        <span class="f-mono" style="font-size: 26px; color: var(--accent);">01</span>
+        <span class="f-display" style="font-size: 40px; line-height: 1.15; color: var(--ink);">Título do card</span>
+        <span class="f-body" style="font-size: 25px; line-height: 1.5; color: var(--ink3);">Uma ou duas frases descrevendo este ponto.</span>
+      </div>
+      <div style="border: 1px solid var(--line18); border-radius: 16px; padding: 48px; display: flex; flex-direction: column; gap: 24px;">
+        <span class="f-mono" style="font-size: 26px; color: var(--accent);">02</span>
+        <span class="f-display" style="font-size: 40px; line-height: 1.15; color: var(--ink);">Título do card</span>
+        <span class="f-body" style="font-size: 25px; line-height: 1.5; color: var(--ink3);">Uma ou duas frases descrevendo este ponto.</span>
+      </div>
+      <div style="border: 1px solid var(--line18); border-radius: 16px; padding: 48px; display: flex; flex-direction: column; gap: 24px;">
+        <span class="f-mono" style="font-size: 26px; color: var(--accent);">03</span>
+        <span class="f-display" style="font-size: 40px; line-height: 1.15; color: var(--ink);">Título do card</span>
+        <span class="f-body" style="font-size: 25px; line-height: 1.5; color: var(--ink3);">Uma ou duas frases descrevendo este ponto.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 · MÉTRICAS (números em destaque) ============ -->
+<section class="slide" data-layout="metricas">
+  <div class="frame" style="gap: 64px;">
+    <div class="header-row">
+      <span class="kicker">03 · RESULTADOS</span>
+      <span class="pagenum" data-pagina>09 / 13</span>
+    </div>
+    <h2 class="f-display" style="margin: 0; font-size: 72px; line-height: 1.08; color: var(--ink); max-width: 1200px;">Números que importam</h2>
+    <div style="flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 56px; align-content: center;">
+      <div style="display: flex; flex-direction: column; gap: 20px; border-top: 1px solid var(--line18); padding-top: 36px;">
+        <span class="f-display" style="font-size: 96px; line-height: 1; color: var(--accent);">128%</span>
+        <span class="f-mono" style="font-size: 22px; letter-spacing: 0.1em; color: var(--ink);">MÉTRICA UM</span>
+        <span class="f-body" style="font-size: 24px; line-height: 1.4; color: var(--ink3);">Uma linha de contexto</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 20px; border-top: 1px solid var(--line18); padding-top: 36px;">
+        <span class="f-display" style="font-size: 96px; line-height: 1; color: var(--ink);">4,2x</span>
+        <span class="f-mono" style="font-size: 22px; letter-spacing: 0.1em; color: var(--ink);">MÉTRICA DOIS</span>
+        <span class="f-body" style="font-size: 24px; line-height: 1.4; color: var(--ink3);">Uma linha de contexto</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 20px; border-top: 1px solid var(--line18); padding-top: 36px;">
+        <span class="f-display" style="font-size: 96px; line-height: 1; color: var(--ink);">86k</span>
+        <span class="f-mono" style="font-size: 22px; letter-spacing: 0.1em; color: var(--ink);">MÉTRICA TRÊS</span>
+        <span class="f-body" style="font-size: 24px; line-height: 1.4; color: var(--ink3);">Uma linha de contexto</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 20px; border-top: 1px solid var(--line18); padding-top: 36px;">
+        <span class="f-display" style="font-size: 96px; line-height: 1; color: var(--ink);">R$ 12M</span>
+        <span class="f-mono" style="font-size: 22px; letter-spacing: 0.1em; color: var(--ink);">MÉTRICA QUATRO</span>
+        <span class="f-body" style="font-size: 24px; line-height: 1.4; color: var(--ink3);">Uma linha de contexto</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 · TIMELINE ============ -->
+<section class="slide" data-layout="timeline">
+  <div class="frame" style="gap: 64px;">
+    <div class="header-row">
+      <span class="kicker">TIMELINE</span>
+      <span class="pagenum" data-pagina>10 / 13</span>
+    </div>
+    <h2 class="f-display" style="margin: 0; font-size: 72px; line-height: 1.08; color: var(--ink); max-width: 1200px;">Linha do tempo</h2>
+    <div style="flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); align-content: center;">
+      <div style="display: flex; flex-direction: column; gap: 28px; padding-right: 48px;">
+        <div style="display: flex; align-items: center;">
+          <span style="width: 20px; height: 20px; border-radius: 999px; background: var(--accent); flex-shrink: 0;"></span>
+          <span style="flex: 1; border-top: 1px solid var(--line25);"></span>
+        </div>
+        <span class="f-mono" style="font-size: 24px; letter-spacing: 0.1em; color: var(--accent);">JAN 2026</span>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <span class="f-display" style="font-size: 34px; line-height: 1.2; color: var(--ink);">Marco um</span>
+          <span class="f-body" style="font-size: 24px; line-height: 1.45; color: var(--ink3);">O que aconteceu ou vai acontecer aqui.</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 28px; padding-right: 48px;">
+        <div style="display: flex; align-items: center;">
+          <span style="width: 20px; height: 20px; border-radius: 999px; background: var(--accent); flex-shrink: 0;"></span>
+          <span style="flex: 1; border-top: 1px solid var(--line25);"></span>
+        </div>
+        <span class="f-mono" style="font-size: 24px; letter-spacing: 0.1em; color: var(--accent);">ABR 2026</span>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <span class="f-display" style="font-size: 34px; line-height: 1.2; color: var(--ink);">Marco dois</span>
+          <span class="f-body" style="font-size: 24px; line-height: 1.45; color: var(--ink3);">O que aconteceu ou vai acontecer aqui.</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 28px; padding-right: 48px;">
+        <div style="display: flex; align-items: center;">
+          <span style="width: 20px; height: 20px; border-radius: 999px; background: var(--accent); flex-shrink: 0;"></span>
+          <span style="flex: 1; border-top: 1px solid var(--line25);"></span>
+        </div>
+        <span class="f-mono" style="font-size: 24px; letter-spacing: 0.1em; color: var(--accent);">AGO 2026</span>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <span class="f-display" style="font-size: 34px; line-height: 1.2; color: var(--ink);">Marco três</span>
+          <span class="f-body" style="font-size: 24px; line-height: 1.45; color: var(--ink3);">O que aconteceu ou vai acontecer aqui.</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 28px;">
+        <div style="display: flex; align-items: center;">
+          <span style="width: 20px; height: 20px; border-radius: 999px; border: 2px solid var(--accent); box-sizing: border-box; background: transparent; flex-shrink: 0;"></span>
+          <span style="flex: 1; border-top: 1px dashed var(--line25);"></span>
+        </div>
+        <span class="f-mono" style="font-size: 24px; letter-spacing: 0.1em; color: var(--accent);">DEZ 2026</span>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <span class="f-display" style="font-size: 34px; line-height: 1.2; color: var(--ink);">Marco quatro</span>
+          <span class="f-body" style="font-size: 24px; line-height: 1.45; color: var(--ink3);">O que aconteceu ou vai acontecer aqui.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 · COMPARATIVO (antes / depois) ============ -->
+<section class="slide" data-layout="comparativo">
+  <div class="frame" style="gap: 64px;">
+    <div class="header-row">
+      <span class="kicker">COMPARATIVO</span>
+      <span class="pagenum" data-pagina>11 / 13</span>
+    </div>
+    <h2 class="f-display" style="margin: 0; font-size: 72px; line-height: 1.08; color: var(--ink); max-width: 1200px;">Antes e depois</h2>
+    <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-content: center;">
+      <div style="border: 1px solid var(--line18); border-radius: 16px; padding: 56px; display: flex; flex-direction: column; gap: 36px;">
+        <span class="f-mono" style="font-size: 24px; letter-spacing: 0.12em; color: var(--ink3);">ANTES</span>
+        <div style="display: flex; flex-direction: column; gap: 28px;">
+          <div style="display: flex; gap: 24px; align-items: baseline;">
+            <span class="f-mono" style="font-size: 26px; color: var(--ink3); flex-shrink: 0;">–</span>
+            <span class="f-body" style="font-size: 27px; line-height: 1.45; color: var(--ink2);">Primeiro ponto da situação atual</span>
+          </div>
+          <div style="display: flex; gap: 24px; align-items: baseline;">
+            <span class="f-mono" style="font-size: 26px; color: var(--ink3); flex-shrink: 0;">–</span>
+            <span class="f-body" style="font-size: 27px; line-height: 1.45; color: var(--ink2);">Segundo ponto da situação atual</span>
+          </div>
+          <div style="display: flex; gap: 24px; align-items: baseline;">
+            <span class="f-mono" style="font-size: 26px; color: var(--ink3); flex-shrink: 0;">–</span>
+            <span class="f-body" style="font-size: 27px; line-height: 1.45; color: var(--ink2);">Terceiro ponto da situação atual</span>
+          </div>
+        </div>
+      </div>
+      <div style="border: 1px solid var(--accent); border-radius: 16px; padding: 56px; display: flex; flex-direction: column; gap: 36px;">
+        <span class="f-mono" style="font-size: 24px; letter-spacing: 0.12em; color: var(--accent);">DEPOIS</span>
+        <div style="display: flex; flex-direction: column; gap: 28px;">
+          <div style="display: flex; gap: 24px; align-items: baseline;">
+            <span class="f-mono" style="font-size: 26px; color: var(--accent); flex-shrink: 0;">+</span>
+            <span class="f-body" style="font-size: 27px; line-height: 1.45; color: var(--ink);">Primeiro ganho da nova situação</span>
+          </div>
+          <div style="display: flex; gap: 24px; align-items: baseline;">
+            <span class="f-mono" style="font-size: 26px; color: var(--accent); flex-shrink: 0;">+</span>
+            <span class="f-body" style="font-size: 27px; line-height: 1.45; color: var(--ink);">Segundo ganho da nova situação</span>
+          </div>
+          <div style="display: flex; gap: 24px; align-items: baseline;">
+            <span class="f-mono" style="font-size: 26px; color: var(--accent); flex-shrink: 0;">+</span>
+            <span class="f-body" style="font-size: 27px; line-height: 1.45; color: var(--ink);">Terceiro ganho da nova situação</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 12 · ROADMAP (por trimestre) ============ -->
+<section class="slide" data-layout="roadmap">
+  <div class="frame" style="gap: 64px;">
+    <div class="header-row">
+      <span class="kicker">ROADMAP</span>
+      <span class="pagenum" data-pagina>12 / 13</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 64px;">
+      <h2 class="f-display" style="margin: 0; font-size: 72px; line-height: 1.08; color: var(--ink);">Roadmap 2026</h2>
+      <div style="display: flex; gap: 40px; align-items: center; padding-bottom: 12px;">
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <span style="width: 14px; height: 14px; border-radius: 999px; background: var(--accent);"></span>
+          <span class="f-body" style="font-size: 22px; color: var(--ink3);">Entregue</span>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <span style="width: 14px; height: 14px; border-radius: 999px; border: 2px solid var(--accent); box-sizing: border-box;"></span>
+          <span class="f-body" style="font-size: 22px; color: var(--ink3);">Em andamento</span>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <span style="width: 14px; height: 14px; border-radius: 999px; border: 2px solid var(--line35); box-sizing: border-box;"></span>
+          <span class="f-body" style="font-size: 22px; color: var(--ink3);">Planejado</span>
+        </div>
+      </div>
+    </div>
+    <div style="flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px;">
+      <div style="display: flex; flex-direction: column; gap: 32px; border-top: 1px solid var(--line18); padding-top: 32px;">
+        <span class="f-mono" style="font-size: 26px; letter-spacing: 0.1em; color: var(--ink);">T1</span>
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <div style="display: flex; gap: 16px; align-items: baseline;">
+            <span style="width: 14px; height: 14px; border-radius: 999px; background: var(--accent); flex-shrink: 0; position: relative; top: 1px;"></span>
+            <span class="f-body" style="font-size: 25px; line-height: 1.4; color: var(--ink2);">Entrega concluída um</span>
+          </div>
+          <div style="display: flex; gap: 16px; align-items: baseline;">
+            <span style="width: 14px; height: 14px; border-radius: 999px; background: var(--accent); flex-shrink: 0; position: relative; top: 1px;"></span>
+            <span class="f-body" style="font-size: 25px; line-height: 1.4; color: var(--ink2);">Entrega concluída dois</span>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 32px; border-top: 1px solid var(--line18); padding-top: 32px;">
+        <span class="f-mono" style="font-size: 26px; letter-spacing: 0.1em; color: var(--ink);">T2</span>
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <div style="display: flex; gap: 16px; align-items: baseline;">
+            <span style="width: 14px; height: 14px; border-radius: 999px; border: 2px solid var(--accent); box-sizing: border-box; flex-shrink: 0; position: relative; top: 1px;"></span>
+            <span class="f-body" style="font-size: 25px; line-height: 1.4; color: var(--ink2);">Iniciativa em andamento</span>
+          </div>
+          <div style="display: flex; gap: 16px; align-items: baseline;">
+            <span style="width: 14px; height: 14px; border-radius: 999px; border: 2px solid var(--accent); box-sizing: border-box; flex-shrink: 0; position: relative; top: 1px;"></span>
+            <span class="f-body" style="font-size: 25px; line-height: 1.4; color: var(--ink2);">Outra frente em curso</span>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 32px; border-top: 1px solid var(--line18); padding-top: 32px;">
+        <span class="f-mono" style="font-size: 26px; letter-spacing: 0.1em; color: var(--ink);">T3</span>
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <div style="display: flex; gap: 16px; align-items: baseline;">
+            <span style="width: 14px; height: 14px; border-radius: 999px; border: 2px solid var(--line35); box-sizing: border-box; flex-shrink: 0; position: relative; top: 1px;"></span>
+            <span class="f-body" style="font-size: 25px; line-height: 1.4; color: var(--ink3);">Item planejado</span>
+          </div>
+          <div style="display: flex; gap: 16px; align-items: baseline;">
+            <span style="width: 14px; height: 14px; border-radius: 999px; border: 2px solid var(--line35); box-sizing: border-box; flex-shrink: 0; position: relative; top: 1px;"></span>
+            <span class="f-body" style="font-size: 25px; line-height: 1.4; color: var(--ink3);">Outro item planejado</span>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 32px; border-top: 1px solid var(--line18); padding-top: 32px;">
+        <span class="f-mono" style="font-size: 26px; letter-spacing: 0.1em; color: var(--ink);">T4</span>
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <div style="display: flex; gap: 16px; align-items: baseline;">
+            <span style="width: 14px; height: 14px; border-radius: 999px; border: 2px solid var(--line35); box-sizing: border-box; flex-shrink: 0; position: relative; top: 1px;"></span>
+            <span class="f-body" style="font-size: 25px; line-height: 1.4; color: var(--ink3);">Item planejado</span>
+          </div>
+          <div style="display: flex; gap: 16px; align-items: baseline;">
+            <span style="width: 14px; height: 14px; border-radius: 999px; border: 2px solid var(--line35); box-sizing: border-box; flex-shrink: 0; position: relative; top: 1px;"></span>
+            <span class="f-body" style="font-size: 25px; line-height: 1.4; color: var(--ink3);">Outro item planejado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 13 · ENCERRAMENTO ============ -->
+<section class="slide" data-layout="encerramento">
+  <div class="frame">
+    <span class="kicker">ENCERRAMENTO</span>
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 40px; max-width: 1360px;">
+      <h2 class="f-display" style="margin: 0; font-size: 128px; line-height: 1.05; color: var(--ink);">Obrigado.</h2>
+      <p class="f-body" style="margin: 0; font-size: 36px; line-height: 1.4; color: var(--ink3); max-width: 980px;">Dúvidas, comentários ou próximos passos — vamos conversar.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 28px;">
+      <div style="border-top: 1px solid var(--line18);"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; gap: 64px; align-items: baseline;">
+          <span class="f-body" style="font-weight: 600; font-size: 26px; color: var(--ink);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fd93929098bd849f988f9cd39e9290">[email&#160;protected]</a></span>
+          <span class="pagenum">ybera.com</span>
+        </div>
+        <div style="display: flex; align-items: center; min-height: 64px;"><img data-logo alt="Logo" style="display: block; height: 64px; width: auto;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script id="logos-data" type="application/json">{"group":{"dark":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzA2IiBoZWlnaHQ9IjkyIiB2aWV3Qm94PSIwIDAgMzA2IDkyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMjk3LjY5OCA0Ny4zMDUzQzMwMC40NyA0Ni44NTg4IDMwMi40OTQgNDUuOTk2MiAzMDMuOTA1IDQ0LjY0OTNDMzA1LjI5MSA0My4zMSAzMDYgNDEuMzI3NSAzMDYgMzguNzc3NUMzMDYgMzUuODU2NyAzMDUuMDQ0IDMzLjY0NzIgMzAzLjE3MSAzMi4yMDk1QzMwMS4yNzUgMzAuNzQxNSAyOTguNTAyIDMwIDI5NC45MjUgMzBIMjgwLjgzOFY2MkgyODIuOTM0VjQ3LjU1NUMyODIuOTM0IDQ3LjU1NSAyOTEuODE4IDQ3LjU1NSAyOTQuNzgyIDQ3LjU1NUMyOTUuNzkzIDQ3LjU1NSAyOTYuOTczIDQ3LjQyNjMgMjk3LjY5OCA0Ny4zMDUzWk0yODIuOTM0IDQ1LjY1NTdWMzEuODkxN0gyOTQuOTI1QzI5Ny45MzcgMzEuODkxNyAzMDAuMjE2IDMyLjQ1OTIgMzAxLjY5IDMzLjU3OTFDMzAzLjE4NyAzNC43MTQxIDMwMy45NTIgMzYuNDY5NiAzMDMuOTUyIDM4Ljc3NzVDMzAzLjk1MiA0MS4wODU0IDMwMy4xODcgNDIuODQwOSAzMDEuNjkgNDMuOTc1OUMzMDAuMjE2IDQ1LjA4ODIgMjk3LjkzNyA0NS42NTU3IDI5NC45MjUgNDUuNjU1N0gyODIuOTM0WiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPHBhdGggZD0iTTI1Ni4xMTcgNjAuNjM4M0MyNTQuMTMyIDU5LjczODEgMjUyLjYxMyA1OC40MTQyIDI1MS41NjEgNTYuNjY2N0MyNTAuNTA5IDU0LjkxOTEgMjQ5Ljk5NSA1Mi44MDg1IDI0OS45OTUgNTAuMzI3MlYzMEgyNTIuNTFWNTAuMTM4MUMyNTIuNTEgNTIuMzI0NCAyNTIuOTQ1IDU0LjE3MDIgMjUzLjgxNSA1NS42ODMyQzI1NC42ODYgNTcuMTg4NyAyNTUuOTI4IDU4LjMzMSAyNTcuNTMzIDU5LjEwMjZDMjU5LjEzOSA1OS44NzQyIDI2MS4wNjkgNjAuMjYgMjYzLjMwOCA2MC4yNkMyNjUuNTc5IDYwLjI2IDI2Ny41MzIgNTkuODc0MiAyNjkuMTYyIDU5LjA5NUMyNzAuNzk5IDU4LjMxNTggMjcyLjA0OSA1Ny4xNzM1IDI3Mi45MjcgNTUuNjUzQzI3My44MDUgNTQuMTQgMjc0LjI0MSA1Mi4zMDE3IDI3NC4yNDEgNTAuMTQ1NlYzMC4wMDc2SDI3Ni43OFY1MC4zMzQ4QzI3Ni43OCA1Mi44MTYxIDI3Ni4yNjYgNTQuOTI2NyAyNzUuMjM3IDU2LjY2NjdDMjc0LjIwOSA1OC40MDY2IDI3Mi42OSA1OS43MzA1IDI3MC42ODEgNjAuNjM4M0MyNjguNjc5IDYxLjU0NjEgMjY2LjIxOSA2MiAyNjMuMyA2MkMyNjAuNSA2MS45OTI0IDI1OC4xMDMgNjEuNTM4NSAyNTYuMTE3IDYwLjYzODNaIiBmaWxsPSJ3aGl0ZSI+PC9wYXRoPgo8cGF0aCBkPSJNMjIyLjM0NyA2MC4wMTc0QzIyMC4wMTggNTguNjkzMiAyMTguMjIyIDU2LjgyNDMgMjE2Ljk2OSA1NC40MDI5QzIxNS43MTYgNTEuOTgxNSAyMTUuMDkzIDQ5LjE3NDIgMjE1LjA5MyA0NS45NjU5QzIxNS4wOTMgNDIuNzgwMyAyMTUuNzI0IDM5Ljk4MDYgMjE2Ljk4NSAzNy41NjY4QzIxOC4yNDcgMzUuMTUzIDIyMC4wNDIgMzMuMjkxNiAyMjIuMzcxIDMxLjk3NDlDMjI0LjcgMzAuNjU4MyAyMjcuNDI1IDMwIDIzMC41MzkgMzBDMjMzLjY4NSAzMCAyMzYuNDE4IDMwLjY1ODMgMjM4LjczMSAzMS45NzQ5QzI0MS4wNDQgMzMuMjkxNiAyNDIuODIzIDM1LjE1MyAyNDQuMDY4IDM3LjU2NjhDMjQ1LjMxNCAzOS45ODA2IDI0NS45MzYgNDIuNzk1NCAyNDUuOTM2IDQ2LjAxMTNDMjQ1LjkzNiA0OS4yMTIxIDI0NS4zMTQgNTIuMDE5MyAyNDQuMDYgNTQuNDMzMkMyNDIuODA3IDU2Ljg0NyAyNDEuMDE5IDU4LjcwODQgMjM4LjY5OSA2MC4wMjVDMjM2LjM3OCA2MS4zNDE2IDIzMy42NiA2MS45OTk5IDIzMC41MzkgNjEuOTk5OUMyMjcuNDAxIDYyLjAwNzUgMjI0LjY3NiA2MS4zNDE2IDIyMi4zNDcgNjAuMDE3NFpNMjE5LjIwOSA1My41MDI0QzIyMC4yMzYgNTUuNjY2NSAyMjEuNzE2IDU3LjM0NjQgMjIzLjY1NyA1OC41MzQ0QzIyNS41OSA1OS43MjIzIDIyNy44ODYgNjAuMzEyNSAyMzAuNTM5IDYwLjMxMjVDMjMzLjE1OSA2MC4zMTI1IDIzNS40MzEgNTkuNzI5OSAyMzcuMzcyIDU4LjU1N0MyMzkuMzA1IDU3LjM4NDIgMjQwLjgwMSA1NS43MTk1IDI0MS44NDQgNTMuNTYzQzI0Mi44ODggNTEuNDA2NCAyNDMuNDEzIDQ4Ljg5NDMgMjQzLjQxMyA0Ni4wMTg5QzI0My40MTMgNDMuMTM1OSAyNDIuODg4IDQwLjYwODYgMjQxLjg0NCAzOC40NTIxQzI0MC44MDEgMzYuMjk1NiAyMzkuMzEzIDM0LjYzMDkgMjM3LjM3MiAzMy40NjU2QzIzNS40NCAzMi4zMDAzIDIzMy4xNTkgMzEuNzE3NyAyMzAuNTM5IDMxLjcxNzdDMjI3Ljk1MSAzMS43MTc3IDIyNS42ODcgMzIuMzAwMyAyMjMuNzQ2IDMzLjQ2NTZDMjIxLjgwNSAzNC42MzA5IDIyMC4zMDEgMzYuMjg4IDIxOS4yNSAzOC40MzdDMjE4LjE5OCA0MC41ODU5IDIxNy42NzMgNDMuMDk4MSAyMTcuNjczIDQ1Ljk2NTlDMjE3LjY2NCA0OC44MjYyIDIxOC4xODIgNTEuMzM4MyAyMTkuMjA5IDUzLjUwMjRaIiBmaWxsPSJ3aGl0ZSI+PC9wYXRoPgo8cGF0aCBkPSJNMjA0LjI5MiA0Ny4yMjk2QzIwNy4wNDkgNDYuODY2NCAyMDkuMTYgNDUuOTk2MiAyMTAuNTYyIDQ0LjY0OTNDMjExLjk0OSA0My4zMSAyMTIuNjU4IDQxLjMyNzUgMjEyLjY1OCAzOC43Nzc1QzIxMi42NTggMzUuODU2NyAyMTEuNzAyIDMzLjY0NzIgMjA5LjgyOSAzMi4yMDk1QzIwNy45MzMgMzAuNzQxNSAyMDUuMTYgMzAgMjAxLjU4MyAzMEgxODcuNDk2VjYySDE4OS41OTJWNDcuNTU1SDIwMC4yNTJMMjA5Ljk4MSA2MkgyMTIuMjkxTDIwMi40NjcgNDcuMzEyOEwyMDQuMjkyIDQ3LjIyOTZaTTE4OS42IDQ1LjY1NTdWMzEuODkxN0gyMDEuNTkxQzIwNC42MDMgMzEuODkxNyAyMDYuODgxIDMyLjQ1OTIgMjA4LjM1NSAzMy41NzkxQzIwOS44NTMgMzQuNzE0MSAyMTAuNjE4IDM2LjQ2OTYgMjEwLjYxOCAzOC43Nzc1QzIxMC42MTggNDEuMDg1NCAyMDkuODUzIDQyLjg0MDkgMjA4LjM1NSA0My45NzU5QzIwNi44ODEgNDUuMDg4MiAyMDQuNjAzIDQ1LjY1NTcgMjAxLjU5MSA0NS42NTU3SDE4OS42WiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPHBhdGggZD0iTTE2OSA0NS4zMDk1VjQ2Ljk4MTZIMTc5LjU5MkMxNzkuNDU0IDU0LjA5MzYgMTczLjg2MyA1OS44NDM3IDE2Ni45OCA1OS44NDM3QzE2MC4zMyA1OS44NDM3IDE1NS44MyA1NC44NTAyIDE1NS40OTkgNDcuMTI1M0MxNTUuMTc2IDM5LjUwNjQgMTYwLjM3OSAzMi43MzQ5IDE2Ny4wOTMgMzIuMDIzN0MxNzEuNTc3IDMxLjU2MjIgMTc3LjQyNyAzMi44MzMzIDE3OS41NjggMzYuNzc1MUwxODEuNDI2IDM1LjkxMjZDMTc4LjgyNCAzMS4xMjM0IDE3Mi4yNDggMjkuNTI2OSAxNjYuODU5IDMwLjExNzFDMTU4Ljk1NyAzMC45NDkzIDE1My4wNTEgMzguNDU0OCAxNTMuNDIyIDQ3LjIwMUMxNTMuNzg2IDU1LjkxNyAxNTkuMjQgNjEuNzczIDE2Ni45OCA2MS43NzNDMTc0LjM2NCA2MS43NzMgMTgwLjQ0IDU2LjE1MTUgMTgxLjQ3NCA0OC44ODgyVjYySDE4My40MzhWNDUuMzE3MUwxNjkgNDUuMzA5NVoiIGZpbGw9IndoaXRlIj48L3BhdGg+CjxwYXRoIGQ9Ik0xMzIuMjkzIDMwSDEzOC44NTNMMTUxLjc4MiA2MkgxNDUuNDYyTDE0Mi40NjkgNTQuMDgyNUgxMjguNTgyTDEyNS42NjEgNjJIMTE5LjMxNkwxMzIuMjkzIDMwWk0xNDAuODY0IDQ5Ljc5MzhMMTM1LjU0OSAzNS42TDEzMC4yMSA0OS43OTM4SDE0MC44NjRaIiBmaWxsPSJ3aGl0ZSI+PC9wYXRoPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEwNS4xMzcgMzBDMTA3LjQ4NCAzMCAxMDkuNTM3IDMwLjQxMjcgMTExLjI5MyAzMS4yMzgxQzExMy4wNjYgMzIuMDYzNSAxMTQuNDMyIDMzLjIwNjMgMTE1LjM5IDM0LjY2NjdDMTE2LjM0OCAzNi4xMjcgMTE2LjgyNyAzNy43Nzc4IDExNi44MjcgMzkuNjE5QzExNi44MjcgNDEuMTU4NyAxMTYuNTI0IDQyLjUzMTcgMTE1LjkxNyA0My43MzgxQzExNS4zMjYgNDQuOTI4NiAxMTQuNjIxIDQ1Ljc2NTMgMTEzLjQ3MyA0Ni43NjE5QzExMi4xMzMgNDcuOTI2MyAxMTAuMzA3IDQ4LjU4NTQgMTA4LjYzNiA0OC45NTQ2TDExNy4yODYgNjJIMTEwLjc5M0wxMDIuNjc2IDQ5LjQwNDhIOTYuODI0MlY2Mkg5MC45MDcyVjMwSDEwNS4xMzdaTTk2LjgyNDIgNDUuMTQyOUgxMDQuNTM4QzEwNi42MTQgNDUuMTQyOSAxMDguMjE5IDQ0LjY5MDUgMTA5LjM1MyA0My43ODU3QzExMC40ODcgNDIuODY1MSAxMTEuMDU0IDQxLjUzMTcgMTExLjA1NCAzOS43ODU3QzExMS4wNTQgMzguMDg3MyAxMTAuNDk1IDM2Ljc5MzcgMTA5LjM3NyAzNS45MDQ4QzEwOC4yNTkgMzUgMTA2LjYyMiAzNC41NDc2IDEwNC40NjYgMzQuNTQ3Nkg5Ni44MjQyVjQ1LjE0MjlaIiBmaWxsPSJ3aGl0ZSI+PC9wYXRoPgo8cGF0aCBkPSJNNjMuMzEwMyAzMEg4Ni40MDE2VjM0LjU3MTRINjkuMTcxNFY0My4yMTk0SDg0LjczMDNWNDcuNzIwMkg2OS4xNzE0VjU3LjQ3NTdIODYuODQ4OFY2Mkg2My4zMTAzVjMwWiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPHBhdGggZD0iTTMzLjI3ODUgMzBINDYuNjkxQzUwLjM5NyAzMCA1My4yMDQxIDMwLjc0NjIgNTUuMTEyMyAzMi4yMzg2QzU3LjAyMDUgMzMuNzE1MyA1Ny45NzQ2IDM1Ljc4MTEgNTcuOTc0NiAzOC40MzU5QzU3Ljk3NDYgMzkuOTQ0IDU3LjU4ODIgNDEuMjYzNiA1Ni44MTU1IDQyLjM5NDdDNTYuMDQyOCA0My41MjU4IDU0Ljk3MDQgNDQuNDI5MSA1My41OTg0IDQ1LjEwNDZDNTQuNjIzNCA0NS40MzQ1IDU1LjU2MTggNDUuOTYwNyA1Ni40MTM0IDQ2LjY4MzRDNTcuMjgwNyA0Ny4zOTAzIDU3Ljk2NjcgNDguMjYyMSA1OC40NzE0IDQ5LjI5OUM1OC45OTE4IDUwLjMzNTggNTkuMjUyIDUxLjQ2NjkgNTkuMjUyIDUyLjY5MjJDNTkuMjUyIDU0LjQ5ODggNTguODE4MyA1Ni4xMDkgNTcuOTUxIDU3LjUyMjhDNTcuMDk5NCA1OC45MjEgNTUuODUzNSA2MC4wMjA2IDU0LjIxMzQgNjAuODIxOEM1Mi41ODkxIDYxLjYwNzMgNTAuNjQ5NCA2MiA0OC4zOTQyIDYySDMzLjI3ODVWMzBaTTQ3LjQwMDcgNTcuNDc1N0M0OC40NTczIDU3LjQ3NTcgNDkuNDE5MyA1Ny4yODcyIDUwLjI4NjYgNTYuOTEwMkM1MS4xNjk4IDU2LjUxNzQgNTEuODYzNyA1NS45NTk3IDUyLjM2ODMgNTUuMjM3MUM1Mi44ODg3IDU0LjUxNDUgNTMuMTQ4OSA1My42NjYyIDUzLjE0ODkgNTIuNjkyMkM1My4xNDg5IDUxLjczMzkgNTIuOTEyNCA1MC44ODU2IDUyLjQzOTMgNTAuMTQ3M0M1MS45NjYyIDQ5LjQwODkgNTEuMjg4MSA0OC44MzU1IDUwLjQwNDkgNDguNDI3MUM0OS41MjE4IDQ4LjAwMjkgNDguNDczMSA0Ny43OTA5IDQ3LjI1ODggNDcuNzkwOUgzOS4xNjg3VjU3LjQ3NTdINDcuNDAwN1pNNDYuMTIzMyA0My4yOTAxQzQ3Ljg4OTYgNDMuMjkwMSA0OS4yODUyIDQyLjkxMzEgNTAuMzEwMyA0Mi4xNTkxQzUxLjM1MTEgNDEuNDA1IDUxLjg3MTUgNDAuMjk3NSA1MS44NzE1IDM4LjgzNjVDNTEuODcxNSAzNy40ODU1IDUxLjM5ODQgMzYuNDQwOCA1MC40NTIyIDM1LjcwMjVDNDkuNTIxOCAzNC45NDg1IDQ4LjEzNCAzNC41NzE0IDQ2LjI4ODkgMzQuNTcxNEgzOS4xNjg3VjQzLjI5MDFINDYuMTIzM1oiIGZpbGw9IndoaXRlIj48L3BhdGg+CjxwYXRoIGQ9Ik0xMi40NzEyIDQ5LjJMMCAzMEg2Ljg1Njc3TDE1LjQyMTggNDMuNkwyMy45MzkgMzBIMzAuODQzNUwxOC40MjAxIDQ5LjJWNjJIMTIuNDcxMlY0OS4yWiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPC9zdmc+","light":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzA2IiBoZWlnaHQ9IjkyIiB2aWV3Qm94PSIwIDAgMzA2IDkyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMjk3LjY5OCA0Ny4zMDUzQzMwMC40NyA0Ni44NTg4IDMwMi40OTQgNDUuOTk2MiAzMDMuOTA1IDQ0LjY0OTNDMzA1LjI5MSA0My4zMSAzMDYgNDEuMzI3NSAzMDYgMzguNzc3NUMzMDYgMzUuODU2NyAzMDUuMDQ0IDMzLjY0NzIgMzAzLjE3MSAzMi4yMDk1QzMwMS4yNzUgMzAuNzQxNSAyOTguNTAyIDMwIDI5NC45MjUgMzBIMjgwLjgzOFY2MkgyODIuOTM0VjQ3LjU1NUMyODIuOTM0IDQ3LjU1NSAyOTEuODE4IDQ3LjU1NSAyOTQuNzgyIDQ3LjU1NUMyOTUuNzkzIDQ3LjU1NSAyOTYuOTczIDQ3LjQyNjMgMjk3LjY5OCA0Ny4zMDUzWk0yODIuOTM0IDQ1LjY1NTdWMzEuODkxN0gyOTQuOTI1QzI5Ny45MzcgMzEuODkxNyAzMDAuMjE2IDMyLjQ1OTIgMzAxLjY5IDMzLjU3OTFDMzAzLjE4NyAzNC43MTQxIDMwMy45NTIgMzYuNDY5NiAzMDMuOTUyIDM4Ljc3NzVDMzAzLjk1MiA0MS4wODU0IDMwMy4xODcgNDIuODQwOSAzMDEuNjkgNDMuOTc1OUMzMDAuMjE2IDQ1LjA4ODIgMjk3LjkzNyA0NS42NTU3IDI5NC45MjUgNDUuNjU1N0gyODIuOTM0WiIgZmlsbD0iIzM3MzczOCI+PC9wYXRoPgo8cGF0aCBkPSJNMjU2LjExNyA2MC42MzgzQzI1NC4xMzIgNTkuNzM4MSAyNTIuNjEzIDU4LjQxNDIgMjUxLjU2MSA1Ni42NjY3QzI1MC41MDkgNTQuOTE5MSAyNDkuOTk1IDUyLjgwODUgMjQ5Ljk5NSA1MC4zMjcyVjMwSDI1Mi41MVY1MC4xMzgxQzI1Mi41MSA1Mi4zMjQ0IDI1Mi45NDUgNTQuMTcwMiAyNTMuODE1IDU1LjY4MzJDMjU0LjY4NiA1Ny4xODg3IDI1NS45MjggNTguMzMxIDI1Ny41MzMgNTkuMTAyNkMyNTkuMTM5IDU5Ljg3NDIgMjYxLjA2OSA2MC4yNiAyNjMuMzA4IDYwLjI2QzI2NS41NzkgNjAuMjYgMjY3LjUzMiA1OS44NzQyIDI2OS4xNjIgNTkuMDk1QzI3MC43OTkgNTguMzE1OCAyNzIuMDQ5IDU3LjE3MzUgMjcyLjkyNyA1NS42NTNDMjczLjgwNSA1NC4xNCAyNzQuMjQxIDUyLjMwMTcgMjc0LjI0MSA1MC4xNDU2VjMwLjAwNzZIMjc2Ljc4VjUwLjMzNDhDMjc2Ljc4IDUyLjgxNjEgMjc2LjI2NiA1NC45MjY3IDI3NS4yMzcgNTYuNjY2N0MyNzQuMjA5IDU4LjQwNjYgMjcyLjY5IDU5LjczMDUgMjcwLjY4MSA2MC42MzgzQzI2OC42NzkgNjEuNTQ2MSAyNjYuMjE5IDYyIDI2My4zIDYyQzI2MC41IDYxLjk5MjQgMjU4LjEwMyA2MS41Mzg1IDI1Ni4xMTcgNjAuNjM4M1oiIGZpbGw9IiMzNzM3MzgiPjwvcGF0aD4KPHBhdGggZD0iTTIyMi4zNDcgNjAuMDE3NEMyMjAuMDE4IDU4LjY5MzIgMjE4LjIyMiA1Ni44MjQzIDIxNi45NjkgNTQuNDAyOUMyMTUuNzE2IDUxLjk4MTUgMjE1LjA5MyA0OS4xNzQyIDIxNS4wOTMgNDUuOTY1OUMyMTUuMDkzIDQyLjc4MDMgMjE1LjcyNCAzOS45ODA2IDIxNi45ODUgMzcuNTY2OEMyMTguMjQ3IDM1LjE1MyAyMjAuMDQyIDMzLjI5MTYgMjIyLjM3MSAzMS45NzQ5QzIyNC43IDMwLjY1ODMgMjI3LjQyNSAzMCAyMzAuNTM5IDMwQzIzMy42ODUgMzAgMjM2LjQxOCAzMC42NTgzIDIzOC43MzEgMzEuOTc0OUMyNDEuMDQ0IDMzLjI5MTYgMjQyLjgyMyAzNS4xNTMgMjQ0LjA2OCAzNy41NjY4QzI0NS4zMTQgMzkuOTgwNiAyNDUuOTM2IDQyLjc5NTQgMjQ1LjkzNiA0Ni4wMTEzQzI0NS45MzYgNDkuMjEyMSAyNDUuMzE0IDUyLjAxOTMgMjQ0LjA2IDU0LjQzMzJDMjQyLjgwNyA1Ni44NDcgMjQxLjAxOSA1OC43MDg0IDIzOC42OTkgNjAuMDI1QzIzNi4zNzggNjEuMzQxNiAyMzMuNjYgNjEuOTk5OSAyMzAuNTM5IDYxLjk5OTlDMjI3LjQwMSA2Mi4wMDc1IDIyNC42NzYgNjEuMzQxNiAyMjIuMzQ3IDYwLjAxNzRaTTIxOS4yMDkgNTMuNTAyNEMyMjAuMjM2IDU1LjY2NjUgMjIxLjcxNiA1Ny4zNDY0IDIyMy42NTcgNTguNTM0NEMyMjUuNTkgNTkuNzIyMyAyMjcuODg2IDYwLjMxMjUgMjMwLjUzOSA2MC4zMTI1QzIzMy4xNTkgNjAuMzEyNSAyMzUuNDMxIDU5LjcyOTkgMjM3LjM3MiA1OC41NTdDMjM5LjMwNSA1Ny4zODQyIDI0MC44MDEgNTUuNzE5NSAyNDEuODQ0IDUzLjU2M0MyNDIuODg4IDUxLjQwNjQgMjQzLjQxMyA0OC44OTQzIDI0My40MTMgNDYuMDE4OUMyNDMuNDEzIDQzLjEzNTkgMjQyLjg4OCA0MC42MDg2IDI0MS44NDQgMzguNDUyMUMyNDAuODAxIDM2LjI5NTYgMjM5LjMxMyAzNC42MzA5IDIzNy4zNzIgMzMuNDY1NkMyMzUuNDQgMzIuMzAwMyAyMzMuMTU5IDMxLjcxNzcgMjMwLjUzOSAzMS43MTc3QzIyNy45NTEgMzEuNzE3NyAyMjUuNjg3IDMyLjMwMDMgMjIzLjc0NiAzMy40NjU2QzIyMS44MDUgMzQuNjMwOSAyMjAuMzAxIDM2LjI4OCAyMTkuMjUgMzguNDM3QzIxOC4xOTggNDAuNTg1OSAyMTcuNjczIDQzLjA5ODEgMjE3LjY3MyA0NS45NjU5QzIxNy42NjQgNDguODI2MiAyMTguMTgyIDUxLjMzODMgMjE5LjIwOSA1My41MDI0WiIgZmlsbD0iIzM3MzczOCI+PC9wYXRoPgo8cGF0aCBkPSJNMjA0LjI5MiA0Ny4yMjk2QzIwNy4wNDkgNDYuODY2NCAyMDkuMTYgNDUuOTk2MiAyMTAuNTYyIDQ0LjY0OTNDMjExLjk0OSA0My4zMSAyMTIuNjU4IDQxLjMyNzUgMjEyLjY1OCAzOC43Nzc1QzIxMi42NTggMzUuODU2NyAyMTEuNzAyIDMzLjY0NzIgMjA5LjgyOSAzMi4yMDk1QzIwNy45MzMgMzAuNzQxNSAyMDUuMTYgMzAgMjAxLjU4MyAzMEgxODcuNDk2VjYySDE4OS41OTJWNDcuNTU1SDIwMC4yNTJMMjA5Ljk4MSA2MkgyMTIuMjkxTDIwMi40NjcgNDcuMzEyOEwyMDQuMjkyIDQ3LjIyOTZaTTE4OS42IDQ1LjY1NTdWMzEuODkxN0gyMDEuNTkxQzIwNC42MDMgMzEuODkxNyAyMDYuODgxIDMyLjQ1OTIgMjA4LjM1NSAzMy41NzkxQzIwOS44NTMgMzQuNzE0MSAyMTAuNjE4IDM2LjQ2OTYgMjEwLjYxOCAzOC43Nzc1QzIxMC42MTggNDEuMDg1NCAyMDkuODUzIDQyLjg0MDkgMjA4LjM1NSA0My45NzU5QzIwNi44ODEgNDUuMDg4MiAyMDQuNjAzIDQ1LjY1NTcgMjAxLjU5MSA0NS42NTU3SDE4OS42WiIgZmlsbD0iIzM3MzczOCI+PC9wYXRoPgo8cGF0aCBkPSJNMTY5IDQ1LjMwOTVWNDYuOTgxNkgxNzkuNTkyQzE3OS40NTQgNTQuMDkzNiAxNzMuODYzIDU5Ljg0MzcgMTY2Ljk4IDU5Ljg0MzdDMTYwLjMzIDU5Ljg0MzcgMTU1LjgzIDU0Ljg1MDIgMTU1LjQ5OSA0Ny4xMjUzQzE1NS4xNzYgMzkuNTA2NCAxNjAuMzc5IDMyLjczNDkgMTY3LjA5MyAzMi4wMjM3QzE3MS41NzcgMzEuNTYyMiAxNzcuNDI3IDMyLjgzMzMgMTc5LjU2OCAzNi43NzUxTDE4MS40MjYgMzUuOTEyNkMxNzguODI0IDMxLjEyMzQgMTcyLjI0OCAyOS41MjY5IDE2Ni44NTkgMzAuMTE3MUMxNTguOTU3IDMwLjk0OTMgMTUzLjA1MSAzOC40NTQ4IDE1My40MjIgNDcuMjAxQzE1My43ODYgNTUuOTE3IDE1OS4yNCA2MS43NzMgMTY2Ljk4IDYxLjc3M0MxNzQuMzY0IDYxLjc3MyAxODAuNDQgNTYuMTUxNSAxODEuNDc0IDQ4Ljg4ODJWNjJIMTgzLjQzOFY0NS4zMTcxTDE2OSA0NS4zMDk1WiIgZmlsbD0iIzM3MzczOCI+PC9wYXRoPgo8cGF0aCBkPSJNMTMyLjI5MyAzMEgxMzguODUzTDE1MS43ODIgNjJIMTQ1LjQ2MkwxNDIuNDY5IDU0LjA4MjVIMTI4LjU4MkwxMjUuNjYxIDYySDExOS4zMTZMMTMyLjI5MyAzMFpNMTQwLjg2NCA0OS43OTM4TDEzNS41NDkgMzUuNkwxMzAuMjEgNDkuNzkzOEgxNDAuODY0WiIgZmlsbD0iIzM3MzczOCI+PC9wYXRoPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEwNS4xMzcgMzBDMTA3LjQ4NCAzMCAxMDkuNTM3IDMwLjQxMjcgMTExLjI5MyAzMS4yMzgxQzExMy4wNjYgMzIuMDYzNSAxMTQuNDMyIDMzLjIwNjMgMTE1LjM5IDM0LjY2NjdDMTE2LjM0OCAzNi4xMjcgMTE2LjgyNyAzNy43Nzc4IDExNi44MjcgMzkuNjE5QzExNi44MjcgNDEuMTU4NyAxMTYuNTI0IDQyLjUzMTcgMTE1LjkxNyA0My43MzgxQzExNS4zMjYgNDQuOTI4NiAxMTQuNjIxIDQ1Ljc2NTMgMTEzLjQ3MyA0Ni43NjE5QzExMi4xMzMgNDcuOTI2MyAxMTAuMzA3IDQ4LjU4NTQgMTA4LjYzNiA0OC45NTQ2TDExNy4yODYgNjJIMTEwLjc5M0wxMDIuNjc2IDQ5LjQwNDhIOTYuODI0MlY2Mkg5MC45MDcyVjMwSDEwNS4xMzdaTTk2LjgyNDIgNDUuMTQyOUgxMDQuNTM4QzEwNi42MTQgNDUuMTQyOSAxMDguMjE5IDQ0LjY5MDUgMTA5LjM1MyA0My43ODU3QzExMC40ODcgNDIuODY1MSAxMTEuMDU0IDQxLjUzMTcgMTExLjA1NCAzOS43ODU3QzExMS4wNTQgMzguMDg3MyAxMTAuNDk1IDM2Ljc5MzcgMTA5LjM3NyAzNS45MDQ4QzEwOC4yNTkgMzUgMTA2LjYyMiAzNC41NDc2IDEwNC40NjYgMzQuNTQ3Nkg5Ni44MjQyVjQ1LjE0MjlaIiBmaWxsPSIjMzczNzM4Ij48L3BhdGg+CjxwYXRoIGQ9Ik02My4zMTAzIDMwSDg2LjQwMTZWMzQuNTcxNEg2OS4xNzE0VjQzLjIxOTRIODQuNzMwM1Y0Ny43MjAySDY5LjE3MTRWNTcuNDc1N0g4Ni44NDg4VjYySDYzLjMxMDNWMzBaIiBmaWxsPSIjMzczNzM4Ij48L3BhdGg+CjxwYXRoIGQ9Ik0zMy4yNzg1IDMwSDQ2LjY5MUM1MC4zOTcgMzAgNTMuMjA0MSAzMC43NDYyIDU1LjExMjMgMzIuMjM4NkM1Ny4wMjA1IDMzLjcxNTMgNTcuOTc0NiAzNS43ODExIDU3Ljk3NDYgMzguNDM1OUM1Ny45NzQ2IDM5Ljk0NCA1Ny41ODgyIDQxLjI2MzYgNTYuODE1NSA0Mi4zOTQ3QzU2LjA0MjggNDMuNTI1OCA1NC45NzA0IDQ0LjQyOTEgNTMuNTk4NCA0NS4xMDQ2QzU0LjYyMzQgNDUuNDM0NSA1NS41NjE4IDQ1Ljk2MDcgNTYuNDEzNCA0Ni42ODM0QzU3LjI4MDcgNDcuMzkwMyA1Ny45NjY3IDQ4LjI2MjEgNTguNDcxNCA0OS4yOTlDNTguOTkxOCA1MC4zMzU4IDU5LjI1MiA1MS40NjY5IDU5LjI1MiA1Mi42OTIyQzU5LjI1MiA1NC40OTg4IDU4LjgxODMgNTYuMTA5IDU3Ljk1MSA1Ny41MjI4QzU3LjA5OTQgNTguOTIxIDU1Ljg1MzUgNjAuMDIwNiA1NC4yMTM0IDYwLjgyMThDNTIuNTg5MSA2MS42MDczIDUwLjY0OTQgNjIgNDguMzk0MiA2MkgzMy4yNzg1VjMwWk00Ny40MDA3IDU3LjQ3NTdDNDguNDU3MyA1Ny40NzU3IDQ5LjQxOTMgNTcuMjg3MiA1MC4yODY2IDU2LjkxMDJDNTEuMTY5OCA1Ni41MTc0IDUxLjg2MzcgNTUuOTU5NyA1Mi4zNjgzIDU1LjIzNzFDNTIuODg4NyA1NC41MTQ1IDUzLjE0ODkgNTMuNjY2MiA1My4xNDg5IDUyLjY5MjJDNTMuMTQ4OSA1MS43MzM5IDUyLjkxMjQgNTAuODg1NiA1Mi40MzkzIDUwLjE0NzNDNTEuOTY2MiA0OS40MDg5IDUxLjI4ODEgNDguODM1NSA1MC40MDQ5IDQ4LjQyNzFDNDkuNTIxOCA0OC4wMDI5IDQ4LjQ3MzEgNDcuNzkwOSA0Ny4yNTg4IDQ3Ljc5MDlIMzkuMTY4N1Y1Ny40NzU3SDQ3LjQwMDdaTTQ2LjEyMzMgNDMuMjkwMUM0Ny44ODk2IDQzLjI5MDEgNDkuMjg1MiA0Mi45MTMxIDUwLjMxMDMgNDIuMTU5MUM1MS4zNTExIDQxLjQwNSA1MS44NzE1IDQwLjI5NzUgNTEuODcxNSAzOC44MzY1QzUxLjg3MTUgMzcuNDg1NSA1MS4zOTg0IDM2LjQ0MDggNTAuNDUyMiAzNS43MDI1QzQ5LjUyMTggMzQuOTQ4NSA0OC4xMzQgMzQuNTcxNCA0Ni4yODg5IDM0LjU3MTRIMzkuMTY4N1Y0My4yOTAxSDQ2LjEyMzNaIiBmaWxsPSIjMzczNzM4Ij48L3BhdGg+CjxwYXRoIGQ9Ik0xMi40NzEyIDQ5LjJMMCAzMEg2Ljg1Njc3TDE1LjQyMTggNDMuNkwyMy45MzkgMzBIMzAuODQzNUwxOC40MjAxIDQ5LjJWNjJIMTIuNDcxMlY0OS4yWiIgZmlsbD0iIzM3MzczOCI+PC9wYXRoPgo8L3N2Zz4="},"ybera":{"dark":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzA2IiBoZWlnaHQ9IjkyIiB2aWV3Qm94PSIwIDAgMzA2IDkyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNNTcuODc5NiAxMUM1MC4xMjMxIDI0LjQxMzkgMTkuNTM5MSA3OC4xMTgzIDE3Ljg5NDQgODFIMTIuODg2NEwyMS4zNTUzIDY1LjkzMDlMMTAuMDUxNiA0NS42MTM4TDEwLjAzOTIgNDUuNTg5MkM5LjM1MTg5IDQ0LjQzNjUgNS44OTEzOSAzOC42MDAyIDQuOTIxNzggMzcuMjUxNEM0Ljc5OTA1IDM3LjA3OTcgNC43MDAzOCAzNi45MDgzIDQuNTg5OTIgMzYuNzM2NkMzLjkxNDkgMzUuNjY5OSAzLjM3NTA4IDM0LjgxMTUgMCAzNC4xODYxSDcuNDg2MzNDNy42MzM2IDM0LjE4NjEgMTAuOTk2MyAzNC4yNzIxIDEyLjI5NzMgMzYuNTE1OEMxMy41MjQ2IDM4LjYzNyAyMi41MjA4IDU0LjQ0MjEgMjUuMTEwNCA1OC45OTFMNTIuMzkzNCAxMUg1Ny44Nzk2WiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPHBhdGggZD0iTTExMi41OCAzOC43NTk0QzExMS4zMDQgMzcuNDU5OSAxMDkuNDE0IDM2Ljk2OTcgMTA1LjgxOCAzNi45Njk3SDk3LjE3NzlWNDcuNDI4N0gxMDMuOTAzQzEwNy4wMDggNDcuNDI4NyAxMDguNjQxIDQ3LjA2MDYgMTA5Ljk0MiA0Ni4wMzA4VjUxLjY1ODhDMTA4LjggNTAuNjI4OCAxMDcuMTQzIDUwLjI2MDggMTAzLjkwMyA1MC4yNjA4SDk3LjE3NzlWNjEuMDI2MUgxMDYuNDkzQzExMC4wODkgNjEuMDI2MSAxMTEuOTkyIDYwLjQwMDggMTEzLjI1NiA1OC43MzMzVjYzLjg0NjZIOTEuMjYyNkM5Mi4xODMxIDYyLjQ2MTEgOTIuNTAxOCA2MC43Njg3IDkyLjUwMTggNTcuNDA5MlY0MC40MTVDOTIuNTAxOCAzNy4yMTQ4IDkyLjE3MDggMzUuNTM0NyA5MS4yNjI2IDM0LjE0OTJIMTEyLjU4VjM4Ljc1OTRaIiBmaWxsPSJ3aGl0ZSI+PC9wYXRoPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEzOC41NjIgMzQuMTQ5MkMxNDUuMTY1IDM0LjE0OTIgMTQ5LjQyNCAzNy4xNzc4IDE0OS40MjQgNDEuODQ5MkMxNDkuNDI0IDQ1LjQwNSAxNDYuODIyIDQ4LjE2MzkgMTQyLjQ1MyA0OS4yMTg0TDE0MS45MjYgNDkuMzQxNEwxNTMuOTA0IDYzLjg0NjZIMTQ4LjAxM0wxMzYuODk0IDQ5LjkxNzdMMTM2Ljg0NCA0OS44Njg1SDEzMy42MTdWNTcuNDU4NEMxMzMuNjE3IDYwLjc2ODggMTMzLjkyNCA2Mi40NDg4IDEzNC44MDcgNjMuODQ2NkgxMjcuNzVDMTI4LjY3IDYyLjQ2MTEgMTI4Ljk5IDYwLjc4MTEgMTI4Ljk5IDU3LjQ1ODRWNDAuNDE1QzEyOC45OSAzNy4yMTQ4IDEyOC42NTggMzUuNTM0NyAxMjcuNzUgMzQuMTQ5MkgxMzguNTYyWk0xMzMuNjA0IDQ3LjEyMThIMTM3LjcwNEMxNDIuMDM2IDQ3LjEyMTcgMTQ0LjUxNSA0NS4yMjEyIDE0NC41MTUgNDEuODk4NEMxNDQuNTE1IDM4LjY2MTUgMTQyLjEwOSAzNi44ODM2IDEzNy43NTIgMzYuODgzNkgxMzMuNjA0VjQ3LjEyMThaIiBmaWxsPSJ3aGl0ZSI+PC9wYXRoPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE5MC43MTEgNTcuNDQ2MUMxOTEuNjggNTkuODEyIDE5Mi4yODEgNjEuMTQ4NCAxOTIuNTY0IDYxLjc0OTNDMTkyLjkzMiA2Mi40ODUgMTkzLjQxMSA2My4xODQ1IDE5NCA2My44NDY2SDE4Ni41MTRDMTg2Ljc4NCA2My4yODI2IDE4Ni45MDYgNjIuNjU2OCAxODYuOTA2IDYxLjk5NDdDMTg2LjkwNiA2MC44NDIyIDE4Ni41MTQgNTkuMjcyNSAxODUuNzI4IDU3LjMyM0wxODQuODgxIDU1LjIzODhIMTcxLjk0NUwxNzEuMTQ4IDU3LjMzNTRDMTcwLjQzNiA1OS4xNSAxNzAuMTA0IDYwLjU0ODMgMTcwLjEwNCA2MS43Mzc3QzE3MC4xMDQgNjIuNTQ2OCAxNzAuMjY0IDYzLjI1ODEgMTcwLjU5NSA2My44NDY2SDE2NC40NzFDMTY1LjYgNjIuNjQ1IDE2Ni4yNzUgNjEuMTYxMiAxNjcuMjMyIDU4LjYyMzJMMTc3LjAxNCAzNC4xMzY5SDE4MS4xMTNMMTkwLjcxMSA1Ny40NDYxWk0xNzMuMTM2IDUyLjIyMjhMMTczLjA3NCA1Mi40MDY2SDE4My43NjRMMTc4LjcwOCAzOS43NjQ5SDE3OC4wMkwxNzMuMTM2IDUyLjIyMjhaIiBmaWxsPSJ3aGl0ZSI+PC9wYXRoPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTY2LjUzODggMzQuMDQ4QzczLjExNyAzNC4wNDgxIDc3LjA0NDcgMzYuNzA5MyA3Ny4wNDQ3IDQxLjE0NzlDNzcuMDQ0NSA0NC4zNjAyIDc0LjU0MDIgNDYuODk3OSA3MC40OTAzIDQ3Ljc2ODVMNjkuMjYzNCA0OC4wODc3VjQ4LjM5MzlDNjkuNzA1MSA0OC40OTIgNzAuMjQ0OSA0OC42MDI2IDcwLjUxNDkgNDguNjM5NEM3NS40NjA5IDQ5LjQ2MDkgNzguNTY2NCA1MS45NjIyIDc4LjU2NjQgNTUuNjE2MUM3OC41NjYzIDYwLjQ4MzcgNzQuMTExIDYzLjc1NzcgNjcuNDcxNCA2My43NTc3SDU0Ljg3OTJDNTUuODg1NiA2Mi4yMTI4IDU2LjA2OTggNjAuMzYxMSA1Ni4wNjk4IDU3LjM1NzJWNDAuMzk5M0M1Ni4wNjk4IDM3LjQzMjIgNTUuODg1NiAzNS41OTI5IDU0Ljg3OTIgMzQuMDQ4SDY2LjUzODhaTTYwLjcwOSA2MS4wMTFINjUuNzc3OUM3MC43NjA2IDYxLjAxMSA3My42MiA1OC45MjYyIDczLjYyIDU1LjI5NjlDNzMuNjE5OSA1MS41OTQxIDcwLjk0NDMgNDkuNzE4MSA2NS42NDI0IDQ5LjcxODFINjAuNzA5VjYxLjAxMVpNNjAuNzA5IDQ2Ljk4MzdINjUuNTA3NkM2OS45MTM2IDQ2Ljk4MzcgNzIuMjQ1NCA0NS4xODEzIDcyLjI0NTQgNDEuNzYwNEM3Mi4yNDUzIDM4LjU2MDMgNjkuODUyMiAzNi43OTQ3IDY1LjUwNzYgMzYuNzk0N0g2MC43MDlWNDYuOTgzN1oiIGZpbGw9IndoaXRlIj48L3BhdGg+Cjwvc3ZnPg==","light":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzA2IiBoZWlnaHQ9IjkyIiB2aWV3Qm94PSIwIDAgMzA2IDkyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNNTcuODc5NiAxMUM1MC4xMjMxIDI0LjQxMzkgMTkuNTM5MSA3OC4xMTgzIDE3Ljg5NDQgODFIMTIuODg2NEwyMS4zNTUzIDY1LjkzMDlMMTAuMDUxNiA0NS42MTM4TDEwLjAzOTIgNDUuNTg5MkM5LjM1MTg5IDQ0LjQzNjUgNS44OTEzOSAzOC42MDAyIDQuOTIxNzggMzcuMjUxNEM0Ljc5OTA1IDM3LjA3OTcgNC43MDAzOCAzNi45MDgzIDQuNTg5OTIgMzYuNzM2NkMzLjkxNDkgMzUuNjY5OSAzLjM3NTA4IDM0LjgxMTUgMCAzNC4xODYxSDcuNDg2MzNDNy42MzM2IDM0LjE4NjEgMTAuOTk2MyAzNC4yNzIxIDEyLjI5NzMgMzYuNTE1OEMxMy41MjQ2IDM4LjYzNyAyMi41MjA4IDU0LjQ0MjEgMjUuMTEwNCA1OC45OTFMNTIuMzkzNCAxMUg1Ny44Nzk2WiIgZmlsbD0iIzEyMTIxNCI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjU4IDM4Ljc1OTRDMTExLjMwNCAzNy40NTk5IDEwOS40MTQgMzYuOTY5NyAxMDUuODE4IDM2Ljk2OTdIOTcuMTc3OVY0Ny40Mjg3SDEwMy45MDNDMTA3LjAwOCA0Ny40Mjg3IDEwOC42NDEgNDcuMDYwNiAxMDkuOTQyIDQ2LjAzMDhWNTEuNjU4OEMxMDguOCA1MC42Mjg4IDEwNy4xNDMgNTAuMjYwOCAxMDMuOTAzIDUwLjI2MDhIOTcuMTc3OVY2MS4wMjYxSDEwNi40OTNDMTEwLjA4OSA2MS4wMjYxIDExMS45OTIgNjAuNDAwOCAxMTMuMjU2IDU4LjczMzNWNjMuODQ2Nkg5MS4yNjI2QzkyLjE4MzEgNjIuNDYxMSA5Mi41MDE4IDYwLjc2ODcgOTIuNTAxOCA1Ny40MDkyVjQwLjQxNUM5Mi41MDE4IDM3LjIxNDggOTIuMTcwOCAzNS41MzQ3IDkxLjI2MjYgMzQuMTQ5MkgxMTIuNThWMzguNzU5NFoiIGZpbGw9IiMxMjEyMTQiPjwvcGF0aD4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMzguNTYyIDM0LjE0OTJDMTQ1LjE2NSAzNC4xNDkyIDE0OS40MjQgMzcuMTc3OCAxNDkuNDI0IDQxLjg0OTJDMTQ5LjQyNCA0NS40MDUgMTQ2LjgyMiA0OC4xNjM5IDE0Mi40NTMgNDkuMjE4NEwxNDEuOTI2IDQ5LjM0MTRMMTUzLjkwNCA2My44NDY2SDE0OC4wMTNMMTM2Ljg5NCA0OS45MTc3TDEzNi44NDQgNDkuODY4NUgxMzMuNjE3VjU3LjQ1ODRDMTMzLjYxNyA2MC43Njg4IDEzMy45MjQgNjIuNDQ4OCAxMzQuODA3IDYzLjg0NjZIMTI3Ljc1QzEyOC42NyA2Mi40NjExIDEyOC45OSA2MC43ODExIDEyOC45OSA1Ny40NTg0VjQwLjQxNUMxMjguOTkgMzcuMjE0OCAxMjguNjU4IDM1LjUzNDcgMTI3Ljc1IDM0LjE0OTJIMTM4LjU2MlpNMTMzLjYwNCA0Ny4xMjE4SDEzNy43MDRDMTQyLjAzNiA0Ny4xMjE3IDE0NC41MTUgNDUuMjIxMiAxNDQuNTE1IDQxLjg5ODRDMTQ0LjUxNSAzOC42NjE1IDE0Mi4xMDkgMzYuODgzNiAxMzcuNzUyIDM2Ljg4MzZIMTMzLjYwNFY0Ny4xMjE4WiIgZmlsbD0iIzEyMTIxNCI+PC9wYXRoPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE5MC43MTEgNTcuNDQ2MUMxOTEuNjggNTkuODEyIDE5Mi4yODEgNjEuMTQ4NCAxOTIuNTY0IDYxLjc0OTNDMTkyLjkzMiA2Mi40ODUgMTkzLjQxMSA2My4xODQ1IDE5NCA2My44NDY2SDE4Ni41MTRDMTg2Ljc4NCA2My4yODI2IDE4Ni45MDYgNjIuNjU2OCAxODYuOTA2IDYxLjk5NDdDMTg2LjkwNiA2MC44NDIyIDE4Ni41MTQgNTkuMjcyNSAxODUuNzI4IDU3LjMyM0wxODQuODgxIDU1LjIzODhIMTcxLjk0NUwxNzEuMTQ4IDU3LjMzNTRDMTcwLjQzNiA1OS4xNSAxNzAuMTA0IDYwLjU0ODMgMTcwLjEwNCA2MS43Mzc3QzE3MC4xMDQgNjIuNTQ2OCAxNzAuMjY0IDYzLjI1ODEgMTcwLjU5NSA2My44NDY2SDE2NC40NzFDMTY1LjYgNjIuNjQ1IDE2Ni4yNzUgNjEuMTYxMiAxNjcuMjMyIDU4LjYyMzJMMTc3LjAxNCAzNC4xMzY5SDE4MS4xMTNMMTkwLjcxMSA1Ny40NDYxWk0xNzMuMTM2IDUyLjIyMjhMMTczLjA3NCA1Mi40MDY2SDE4My43NjRMMTc4LjcwOCAzOS43NjQ5SDE3OC4wMkwxNzMuMTM2IDUyLjIyMjhaIiBmaWxsPSIjMTIxMjE0Ij48L3BhdGg+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNjYuNTM4OCAzNC4wNDhDNzMuMTE3IDM0LjA0ODEgNzcuMDQ0NyAzNi43MDkzIDc3LjA0NDcgNDEuMTQ3OUM3Ny4wNDQ1IDQ0LjM2MDIgNzQuNTQwMiA0Ni44OTc5IDcwLjQ5MDMgNDcuNzY4NUw2OS4yNjM0IDQ4LjA4NzdWNDguMzkzOUM2OS43MDUxIDQ4LjQ5MiA3MC4yNDQ5IDQ4LjYwMjYgNzAuNTE0OSA0OC42Mzk0Qzc1LjQ2MDkgNDkuNDYwOSA3OC41NjY0IDUxLjk2MjIgNzguNTY2NCA1NS42MTYxQzc4LjU2NjMgNjAuNDgzNyA3NC4xMTEgNjMuNzU3NyA2Ny40NzE0IDYzLjc1NzdINTQuODc5MkM1NS44ODU2IDYyLjIxMjggNTYuMDY5OCA2MC4zNjExIDU2LjA2OTggNTcuMzU3MlY0MC4zOTkzQzU2LjA2OTggMzcuNDMyMiA1NS44ODU2IDM1LjU5MjkgNTQuODc5MiAzNC4wNDhINjYuNTM4OFpNNjAuNzA5IDYxLjAxMUg2NS43Nzc5QzcwLjc2MDYgNjEuMDExIDczLjYyIDU4LjkyNjIgNzMuNjIgNTUuMjk2OUM3My42MTk5IDUxLjU5NDEgNzAuOTQ0MyA0OS43MTgxIDY1LjY0MjQgNDkuNzE4MUg2MC43MDlWNjEuMDExWk02MC43MDkgNDYuOTgzN0g2NS41MDc2QzY5LjkxMzYgNDYuOTgzNyA3Mi4yNDU0IDQ1LjE4MTMgNzIuMjQ1NCA0MS43NjA0QzcyLjI0NTMgMzguNTYwMyA2OS44NTIyIDM2Ljc5NDcgNjUuNTA3NiAzNi43OTQ3SDYwLjcwOVY0Ni45ODM3WiIgZmlsbD0iIzEyMTIxNCI+PC9wYXRoPgo8L3N2Zz4="},"club":{"dark":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzA2IiBoZWlnaHQ9IjkyIiB2aWV3Qm94PSIwIDAgMzA2IDkyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTQ2LjY4OSAyOEgxNTMuOTY0TDE2OC4zIDY0SDE2MS4yOTFMMTU3Ljk3MyA1NS4wOTI4SDE0Mi41NzRMMTM5LjMzNSA2NEgxMzIuM0wxNDYuNjg5IDI4Wk0xNTYuMTk0IDUwLjI2OEwxNTAuMyAzNC4zTDE0NC4zOCA1MC4yNjhIMTU2LjE5NFoiIGZpbGw9IndoaXRlIj48L3BhdGg+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTE2LjU3OCAyOEMxMTkuMTgxIDI4IDEyMS40NTcgMjguNDY0MyAxMjMuNDA1IDI5LjM5MjlDMTI1LjM3IDMwLjMyMTQgMTI2Ljg4NCAzMS42MDcxIDEyNy45NDcgMzMuMjVDMTI5LjAwOSAzNC44OTI5IDEyOS41NDEgMzYuNzUgMTI5LjU0MSAzOC44MjE0QzEyOS41NDEgNDAuNTUzNiAxMjkuMjA0IDQyLjA5ODIgMTI4LjUzMSA0My40NTU0QzEyNy44NzYgNDQuNzk0NiAxMjcuMDk0IDQ1LjczNiAxMjUuODIyIDQ2Ljg1NzFDMTI0LjMzNSA0OC4xNjcxIDEyMi4zMTEgNDguOTA4NSAxMjAuNDU4IDQ5LjMyMzlMMTMwLjA1IDY0SDEyMi44NUwxMTMuODUgNDkuODMwNEgxMDcuMzYxVjY0SDEwMC44VjI4SDExNi41NzhaTTEwNy4zNjEgNDUuMDM1N0gxMTUuOTE0QzExOC4yMTYgNDUuMDM1NyAxMTkuOTk2IDQ0LjUyNjggMTIxLjI1MyA0My41MDg5QzEyMi41MSA0Mi40NzMyIDEyMy4xMzkgNDAuOTczMiAxMjMuMTM5IDM5LjAwODlDMTIzLjEzOSAzNy4wOTgyIDEyMi41MTkgMzUuNjQyOSAxMjEuMjggMzQuNjQyOUMxMjAuMDQgMzMuNjI1IDExOC4yMjUgMzMuMTE2MSAxMTUuODM0IDMzLjExNjFIMTA3LjM2MVY0NS4wMzU3WiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPHBhdGggZD0iTTcwLjIgMjhIOTUuODA0MVYzMy4xNDI5SDc2LjY5ODlWNDIuODcxOUg5My45NTFWNDcuOTM1Mkg3Ni42OTg5VjU4LjkxMDJIOTYuM1Y2NEg3MC4yVjI4WiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPHBhdGggZD0iTTM2LjkgMjhINTEuNzcyMUM1NS44ODE0IDI4IDU4Ljk5NCAyOC44Mzk1IDYxLjEwOTggMzAuNTE4NEM2My4yMjU3IDMyLjE3OTcgNjQuMjgzNiAzNC41MDM3IDY0LjI4MzYgMzcuNDkwNEM2NC4yODM2IDM5LjE4NyA2My44NTUyIDQwLjY3MTYgNjIuOTk4NCA0MS45NDRDNjIuMTQxNSA0My4yMTY1IDYwLjk1MjUgNDQuMjMyNyA1OS40MzExIDQ0Ljk5MjZDNjAuNTY3OCA0NS4zNjM4IDYxLjYwODIgNDUuOTU1OCA2Mi41NTI1IDQ2Ljc2ODhDNjMuNTE0MiA0Ny41NjQxIDY0LjI3NDkgNDguNTQ0OSA2NC44MzQ0IDQ5LjcxMTNDNjUuNDExNSA1MC44Nzc4IDY1LjcgNTIuMTUwMiA2NS43IDUzLjUyODdDNjUuNyA1NS41NjExIDY1LjIxOTEgNTcuMzcyNiA2NC4yNTc0IDU4Ljk2MzJDNjMuMzEzMSA2MC41MzYxIDYxLjkzMTcgNjEuNzczMiA2MC4xMTMxIDYyLjY3NDVDNTguMzEyIDYzLjU1ODIgNTYuMTYxMiA2NCA1My42NjA3IDY0SDM2LjlWMjhaTTUyLjU1OSA1OC45MTAyQzUzLjczMDYgNTguOTEwMiA1NC43OTczIDU4LjY5ODEgNTUuNzU5IDU4LjI3MzlDNTYuNzM4MyA1Ny44MzIxIDU3LjUwNzYgNTcuMjA0NyA1OC4wNjcyIDU2LjM5MThDNTguNjQ0MyA1NS41Nzg4IDU4LjkzMjggNTQuNjI0NCA1OC45MzI4IDUzLjUyODdDNTguOTMyOCA1Mi40NTA3IDU4LjY3MDUgNTEuNDk2MyA1OC4xNDU5IDUwLjY2NTdDNTcuNjIxMyA0OS44MzUxIDU2Ljg2OTQgNDkuMTkgNTUuODkwMiA0OC43MzA1QzU0LjkxMDkgNDguMjUzMyA1My43NDgxIDQ4LjAxNDcgNTIuNDAxNiA0OC4wMTQ3SDQzLjQzMTFWNTguOTEwMkg1Mi41NTlaTTUxLjE0MjYgNDIuOTUxNEM1My4xMDExIDQyLjk1MTQgNTQuNjQ4NiA0Mi41MjcyIDU1Ljc4NTIgNDEuNjc4OUM1Ni45MzkzIDQwLjgzMDYgNTcuNTE2NCAzOS41ODQ3IDU3LjUxNjQgMzcuOTQxMUM1Ny41MTY0IDM2LjQyMTIgNTYuOTkxOCAzNS4yNDU5IDU1Ljk0MjYgMzQuNDE1M0M1NC45MTA5IDMzLjU2NyA1My4zNzIxIDMzLjE0MjkgNTEuMzI2MiAzMy4xNDI5SDQzLjQzMTFWNDIuOTUxNEg1MS4xNDI2WiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPHBhdGggZD0iTTEzLjgyODQgNDkuNkwwIDI4SDcuNjAyOTRMMTcuMSA0My4zTDI2LjU0NDEgMjhIMzQuMkwyMC40MjQ2IDQ5LjZWNjRIMTMuODI4NFY0OS42WiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPHBhdGggZD0iTTI5Ny42NzQgMzEuNDAxM0MzMDAuOTYzIDM0LjQ5MzQgMzAwLjk2MyAzOS41MDcgMjk3LjY3NCA0Mi41OTkxTDI5Ni4xIDQxLjExOTRDMjk4LjUyIDM4Ljg0NDUgMjk4LjUyIDM1LjE1NTkgMjk2LjEgMzIuODgxTDI5Ny42NzQgMzEuNDAxM1oiIGZpbGw9IiNFRDFBNTciPjwvcGF0aD4KPHBhdGggZD0iTTMwMi4wMzQgMjhDMzA3LjMyMiAzMi45NzA2IDMwNy4zMjIgNDEuMDI5NCAzMDIuMDM0IDQ2TDMwMC40NiA0NC41MjAzQzMwNC44NzggNDAuMzY2OSAzMDQuODc5IDMzLjYzMzEgMzAwLjQ2IDI5LjQ3OTdMMzAyLjAzNCAyOFoiIGZpbGw9IiNFRDFBNTciPjwvcGF0aD4KPHBhdGggZD0iTTI2NS41IDY0VjI4SDI4MS4yNDFDMjg0LjUwNCAyOCAyODcuMTI3IDI4LjgwNTcgMjg5LjExMiAzMC40MTcxQzI5MS4wOTYgMzEuOTk0MyAyOTIuMDg4IDM0LjM0MjkgMjkyLjA4OCAzNy40NjI5QzI5Mi4wODggMzkuMjExNCAyOTEuNzAxIDQwLjc4ODYgMjkwLjkyOCA0Mi4xOTQzQzI5MC4xNTQgNDMuNiAyODkuMDExIDQ0LjU5NDMgMjg3LjQ5NyA0NS4xNzcxQzI4OS4xNzkgNDUuNjU3MSAyOTAuNTc1IDQ2LjY4NTcgMjkxLjY4NSA0OC4yNjI5QzI5Mi43OTUgNDkuODA1NyAyOTMuMzY2IDUxLjY5MTQgMjkzLjQgNTMuOTJDMjkzLjQgNTUuNiAyOTMuMTE0IDU3LjA3NDMgMjkyLjU0MiA1OC4zNDI5QzI5Mi4wMDQgNTkuNjExNCAyOTEuMjMxIDYwLjY3NDMgMjkwLjIyMSA2MS41MzE0QzI4OS4yMTIgNjIuMzU0MyAyODcuOTg1IDYyLjk3MTQgMjg2LjUzOSA2My4zODI5QzI4NS4wOTIgNjMuNzk0MyAyODMuNDk1IDY0IDI4MS43NDYgNjRIMjY1LjVaTTI4Mi40NTIgNDMuODkxNEMyODMuNjYzIDQzLjg5MTQgMjg0LjY3MiA0My43MzcxIDI4NS40NzkgNDMuNDI4NkMyODYuMzIgNDMuMDg1NyAyODYuOTkzIDQyLjY0IDI4Ny40OTcgNDIuMDkxNEMyODguMDM1IDQxLjUwODYgMjg4LjQyMiA0MC44NCAyODguNjU4IDQwLjA4NTdDMjg4Ljg5MyAzOS4yOTcxIDI4OS4wMTEgMzguNDc0MyAyODkuMDExIDM3LjYxNzFDMjg5LjAxMSAzNS4zNTQzIDI4OC4zNTUgMzMuNjc0MyAyODcuMDQzIDMyLjU3NzFDMjg1LjczMSAzMS40OCAyODMuNzEzIDMwLjkzMTQgMjgwLjk4OSAzMC45MzE0SDI2OC40MjZWNDMuODRMMjgyLjQ1MiA0My44OTE0Wk0yNjguNDI2IDYxLjA2ODZIMjgxLjQ5M0MyODcuNDEzIDYxLjA2ODYgMjkwLjM3MyA1OC42Njg2IDI5MC4zNzMgNTMuODY4NkMyOTAuMzczIDUyLjkwODYgMjkwLjIyMiA1MiAyODkuOTE5IDUxLjE0MjlDMjg5LjY1IDUwLjI4NTcgMjg5LjE5NiA0OS41MzE0IDI4OC41NTcgNDguODhDMjg3Ljk1MSA0OC4yMjg2IDI4Ny4xNjEgNDcuNzE0MyAyODYuMTg1IDQ3LjMzNzFDMjg1LjI0NCA0Ni45NiAyODQuMSA0Ni43NzE0IDI4Mi43NTUgNDYuNzcxNEwyNjguNDI2IDQ2LjcyVjYxLjA2ODZaIiBmaWxsPSIjRUQxQTU3Ij48L3BhdGg+CjxwYXRoIGQ9Ik0yNDcuNDc1IDY0QzI0NS40NTYgNjQgMjQzLjYyMiA2My42NDUxIDI0MS45NzQgNjIuOTM1MkMyNDAuMzI1IDYyLjIyNTQgMjM4Ljg5NSA2MS4yMjgyIDIzNy42ODQgNTkuOTQzN0MyMzYuNTA3IDU4LjY1OTIgMjM1LjU5OCA1Ny4xMjExIDIzNC45NTkgNTUuMzI5NkMyMzQuMzIgNTMuNTA0MiAyMzQgNTEuNTA5OSAyMzQgNDkuMzQ2NVYyOEgyMzcuMDI4VjQ5LjQ5ODZDMjM3LjAyOCA1MS4yNTYzIDIzNy4yOCA1Mi44NDUxIDIzNy43ODUgNTQuMjY0OEMyMzguMjkgNTUuNjg0NSAyMzguOTk2IDU2LjkwMTQgMjM5LjkwNSA1Ny45MTU1QzI0MC44NDcgNTguOTI5NiAyNDEuOTU3IDU5LjcwNyAyNDMuMjM2IDYwLjI0NzlDMjQ0LjUxNCA2MC43ODg3IDI0NS45MjcgNjEuMDU5MiAyNDcuNDc1IDYxLjA1OTJDMjQ5LjA5IDYxLjA1OTIgMjUwLjUzNiA2MC43ODg3IDI1MS44MTUgNjAuMjQ3OUMyNTMuMTI3IDU5LjY3MzIgMjU0LjIzNyA1OC44Nzg5IDI1NS4xNDYgNTcuODY0OEMyNTYuMDU0IDU2Ljg1MDcgMjU2Ljc2MSA1NS42MzM4IDI1Ny4yNjUgNTQuMjE0MUMyNTcuNzcgNTIuNzk0NCAyNTguMDIyIDUxLjIzOTQgMjU4LjAyMiA0OS41NDkzVjI4SDI2MVY0OS4zNDY1QzI2MSA1MS41NDM3IDI2MC42OCA1My41MzggMjYwLjA0MSA1NS4zMjk2QzI1OS40MDIgNTcuMTIxMSAyNTguNDc3IDU4LjY1OTIgMjU3LjI2NSA1OS45NDM3QzI1Ni4wODggNjEuMjI4MiAyNTQuNjU4IDYyLjIyNTQgMjUyLjk3NiA2Mi45MzUyQzI1MS4zMjcgNjMuNjQ1MSAyNDkuNDkzIDY0IDI0Ny40NzUgNjRaIiBmaWxsPSIjRUQxQTU3Ij48L3BhdGg+CjxwYXRoIGQ9Ik0yMDkuMjM3IDYxLjAxNzFIMjMxLjNWNjRIMjA2LjFWMjhIMjA5LjIzN1Y2MS4wMTcxWiIgZmlsbD0iI0VEMUE1NyI+PC9wYXRoPgo8cGF0aCBkPSJNMTg3LjUgNjRDMTg1LjAzMyA2NCAxODIuNzMzIDYzLjU2NjcgMTgwLjYgNjIuN0MxNzguNSA2MS44IDE3Ni42NjcgNjAuNTY2NyAxNzUuMSA1OUMxNzMuNTMzIDU3LjQgMTcyLjMgNTUuNSAxNzEuNCA1My4zQzE3MC41MzMgNTEuMSAxNzAuMSA0OC42NjY3IDE3MC4xIDQ2QzE3MC4xIDQzLjMgMTcwLjUzMyA0MC44NSAxNzEuNCAzOC42NUMxNzIuMyAzNi40MTY3IDE3My41MTcgMzQuNTE2NyAxNzUuMDUgMzIuOTVDMTc2LjYxNyAzMS4zODMzIDE3OC40NjcgMzAuMTY2NyAxODAuNiAyOS4zQzE4Mi43MzMgMjguNDMzMyAxODUuMDMzIDI4IDE4Ny41IDI4QzE5MC4yIDI4IDE5Mi42ODMgMjguNTY2NyAxOTQuOTUgMjkuN0MxOTcuMjE3IDMwLjggMTk5LjA4MyAzMi40IDIwMC41NSAzNC41TDE5OCAzNi4xQzE5Ni44IDM0LjUgMTk1LjM2NyAzMy4yMzMzIDE5My43IDMyLjNDMTkyLjAzMyAzMS4zNjY3IDE4OS45NjcgMzAuOSAxODcuNSAzMC45QzE4NS40NjcgMzAuOSAxODMuNTY3IDMxLjI2NjcgMTgxLjggMzJDMTgwLjA2NyAzMi43IDE3OC41NSAzMy43IDE3Ny4yNSAzNUMxNzUuOTUgMzYuMyAxNzQuOTMzIDM3Ljg4MzMgMTc0LjIgMzkuNzVDMTczLjQ2NyA0MS42MTY3IDE3My4xIDQzLjcgMTczLjEgNDZDMTczLjEgNDguMjY2NyAxNzMuNDY3IDUwLjMzMzMgMTc0LjIgNTIuMkMxNzQuOTY3IDU0LjAzMzMgMTc2IDU1LjYxNjcgMTc3LjMgNTYuOTVDMTc4LjYgNTguMjgzMyAxODAuMTE3IDU5LjMxNjcgMTgxLjg1IDYwLjA1QzE4My42MTcgNjAuNzUgMTg1LjUgNjEuMSAxODcuNSA2MS4xQzE4OS43NjcgNjEuMSAxOTEuNzgzIDYwLjYzMzMgMTkzLjU1IDU5LjdDMTk1LjMxNyA1OC43MzMzIDE5Ni44IDU3LjQxNjcgMTk4IDU1Ljc1TDIwMC43IDU3QzE5OS4yNjcgNTkuMiAxOTcuNCA2MC45MTY3IDE5NS4xIDYyLjE1QzE5Mi44IDYzLjM4MzMgMTkwLjI2NyA2NCAxODcuNSA2NFoiIGZpbGw9IiNFRDFBNTciPjwvcGF0aD4KPC9zdmc+","light":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzA2IiBoZWlnaHQ9IjkyIiB2aWV3Qm94PSIwIDAgMzA2IDkyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTQ2LjY4OSAyOEgxNTMuOTY0TDE2OC4zIDY0SDE2MS4yOTFMMTU3Ljk3MyA1NS4wOTI4SDE0Mi41NzRMMTM5LjMzNSA2NEgxMzIuM0wxNDYuNjg5IDI4Wk0xNTYuMTk0IDUwLjI2OEwxNTAuMyAzNC4zTDE0NC4zOCA1MC4yNjhIMTU2LjE5NFoiIGZpbGw9IiMzNzM3MzgiPjwvcGF0aD4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMTYuNTc4IDI4QzExOS4xODEgMjggMTIxLjQ1NyAyOC40NjQzIDEyMy40MDUgMjkuMzkyOUMxMjUuMzcgMzAuMzIxNCAxMjYuODg0IDMxLjYwNzEgMTI3Ljk0NyAzMy4yNUMxMjkuMDA5IDM0Ljg5MjkgMTI5LjU0MSAzNi43NSAxMjkuNTQxIDM4LjgyMTRDMTI5LjU0MSA0MC41NTM2IDEyOS4yMDQgNDIuMDk4MiAxMjguNTMxIDQzLjQ1NTRDMTI3Ljg3NiA0NC43OTQ2IDEyNy4wOTQgNDUuNzM2IDEyNS44MjIgNDYuODU3MUMxMjQuMzM1IDQ4LjE2NzEgMTIyLjMxMSA0OC45MDg1IDEyMC40NTggNDkuMzIzOUwxMzAuMDUgNjRIMTIyLjg1TDExMy44NSA0OS44MzA0SDEwNy4zNjFWNjRIMTAwLjhWMjhIMTE2LjU3OFpNMTA3LjM2MSA0NS4wMzU3SDExNS45MTRDMTE4LjIxNiA0NS4wMzU3IDExOS45OTYgNDQuNTI2OCAxMjEuMjUzIDQzLjUwODlDMTIyLjUxIDQyLjQ3MzIgMTIzLjEzOSA0MC45NzMyIDEyMy4xMzkgMzkuMDA4OUMxMjMuMTM5IDM3LjA5ODIgMTIyLjUxOSAzNS42NDI5IDEyMS4yOCAzNC42NDI5QzEyMC4wNCAzMy42MjUgMTE4LjIyNSAzMy4xMTYxIDExNS44MzQgMzMuMTE2MUgxMDcuMzYxVjQ1LjAzNTdaIiBmaWxsPSIjMzczNzM4Ij48L3BhdGg+CjxwYXRoIGQ9Ik03MC4yIDI4SDk1LjgwNDFWMzMuMTQyOUg3Ni42OTg5VjQyLjg3MTlIOTMuOTUxVjQ3LjkzNTJINzYuNjk4OVY1OC45MTAySDk2LjNWNjRINzAuMlYyOFoiIGZpbGw9IiMzNzM3MzgiPjwvcGF0aD4KPHBhdGggZD0iTTM2LjkgMjhINTEuNzcyMUM1NS44ODE0IDI4IDU4Ljk5NCAyOC44Mzk1IDYxLjEwOTggMzAuNTE4NEM2My4yMjU3IDMyLjE3OTcgNjQuMjgzNiAzNC41MDM3IDY0LjI4MzYgMzcuNDkwNEM2NC4yODM2IDM5LjE4NyA2My44NTUyIDQwLjY3MTYgNjIuOTk4NCA0MS45NDRDNjIuMTQxNSA0My4yMTY1IDYwLjk1MjUgNDQuMjMyNyA1OS40MzExIDQ0Ljk5MjZDNjAuNTY3OCA0NS4zNjM4IDYxLjYwODIgNDUuOTU1OCA2Mi41NTI1IDQ2Ljc2ODhDNjMuNTE0MiA0Ny41NjQxIDY0LjI3NDkgNDguNTQ0OSA2NC44MzQ0IDQ5LjcxMTNDNjUuNDExNSA1MC44Nzc4IDY1LjcgNTIuMTUwMiA2NS43IDUzLjUyODdDNjUuNyA1NS41NjExIDY1LjIxOTEgNTcuMzcyNiA2NC4yNTc0IDU4Ljk2MzJDNjMuMzEzMSA2MC41MzYxIDYxLjkzMTcgNjEuNzczMiA2MC4xMTMxIDYyLjY3NDVDNTguMzEyIDYzLjU1ODIgNTYuMTYxMiA2NCA1My42NjA3IDY0SDM2LjlWMjhaTTUyLjU1OSA1OC45MTAyQzUzLjczMDYgNTguOTEwMiA1NC43OTczIDU4LjY5ODEgNTUuNzU5IDU4LjI3MzlDNTYuNzM4MyA1Ny44MzIxIDU3LjUwNzYgNTcuMjA0NyA1OC4wNjcyIDU2LjM5MThDNTguNjQ0MyA1NS41Nzg4IDU4LjkzMjggNTQuNjI0NCA1OC45MzI4IDUzLjUyODdDNTguOTMyOCA1Mi40NTA3IDU4LjY3MDUgNTEuNDk2MyA1OC4xNDU5IDUwLjY2NTdDNTcuNjIxMyA0OS44MzUxIDU2Ljg2OTQgNDkuMTkgNTUuODkwMiA0OC43MzA1QzU0LjkxMDkgNDguMjUzMyA1My43NDgxIDQ4LjAxNDcgNTIuNDAxNiA0OC4wMTQ3SDQzLjQzMTFWNTguOTEwMkg1Mi41NTlaTTUxLjE0MjYgNDIuOTUxNEM1My4xMDExIDQyLjk1MTQgNTQuNjQ4NiA0Mi41MjcyIDU1Ljc4NTIgNDEuNjc4OUM1Ni45MzkzIDQwLjgzMDYgNTcuNTE2NCAzOS41ODQ3IDU3LjUxNjQgMzcuOTQxMUM1Ny41MTY0IDM2LjQyMTIgNTYuOTkxOCAzNS4yNDU5IDU1Ljk0MjYgMzQuNDE1M0M1NC45MTA5IDMzLjU2NyA1My4zNzIxIDMzLjE0MjkgNTEuMzI2MiAzMy4xNDI5SDQzLjQzMTFWNDIuOTUxNEg1MS4xNDI2WiIgZmlsbD0iIzM3MzczOCI+PC9wYXRoPgo8cGF0aCBkPSJNMTMuODI4NCA0OS42TDAgMjhINy42MDI5NEwxNy4xIDQzLjNMMjYuNTQ0MSAyOEgzNC4yTDIwLjQyNDYgNDkuNlY2NEgxMy44Mjg0VjQ5LjZaIiBmaWxsPSIjMzczNzM4Ij48L3BhdGg+CjxwYXRoIGQ9Ik0yOTcuNjc0IDMxLjQwMTNDMzAwLjk2MyAzNC40OTM0IDMwMC45NjMgMzkuNTA3IDI5Ny42NzQgNDIuNTk5MUwyOTYuMSA0MS4xMTk0QzI5OC41MiAzOC44NDQ1IDI5OC41MiAzNS4xNTU5IDI5Ni4xIDMyLjg4MUwyOTcuNjc0IDMxLjQwMTNaIiBmaWxsPSIjRUQxQTU3Ij48L3BhdGg+CjxwYXRoIGQ9Ik0zMDIuMDM0IDI4QzMwNy4zMjIgMzIuOTcwNiAzMDcuMzIyIDQxLjAyOTQgMzAyLjAzNCA0NkwzMDAuNDYgNDQuNTIwM0MzMDQuODc4IDQwLjM2NjkgMzA0Ljg3OSAzMy42MzMxIDMwMC40NiAyOS40Nzk3TDMwMi4wMzQgMjhaIiBmaWxsPSIjRUQxQTU3Ij48L3BhdGg+CjxwYXRoIGQ9Ik0yNjUuNSA2NFYyOEgyODEuMjQxQzI4NC41MDQgMjggMjg3LjEyNyAyOC44MDU3IDI4OS4xMTIgMzAuNDE3MUMyOTEuMDk2IDMxLjk5NDMgMjkyLjA4OCAzNC4zNDI5IDI5Mi4wODggMzcuNDYyOUMyOTIuMDg4IDM5LjIxMTQgMjkxLjcwMSA0MC43ODg2IDI5MC45MjggNDIuMTk0M0MyOTAuMTU0IDQzLjYgMjg5LjAxMSA0NC41OTQzIDI4Ny40OTcgNDUuMTc3MUMyODkuMTc5IDQ1LjY1NzEgMjkwLjU3NSA0Ni42ODU3IDI5MS42ODUgNDguMjYyOUMyOTIuNzk1IDQ5LjgwNTcgMjkzLjM2NiA1MS42OTE0IDI5My40IDUzLjkyQzI5My40IDU1LjYgMjkzLjExNCA1Ny4wNzQzIDI5Mi41NDIgNTguMzQyOUMyOTIuMDA0IDU5LjYxMTQgMjkxLjIzMSA2MC42NzQzIDI5MC4yMjEgNjEuNTMxNEMyODkuMjEyIDYyLjM1NDMgMjg3Ljk4NSA2Mi45NzE0IDI4Ni41MzkgNjMuMzgyOUMyODUuMDkyIDYzLjc5NDMgMjgzLjQ5NSA2NCAyODEuNzQ2IDY0SDI2NS41Wk0yODIuNDUyIDQzLjg5MTRDMjgzLjY2MyA0My44OTE0IDI4NC42NzIgNDMuNzM3MSAyODUuNDc5IDQzLjQyODZDMjg2LjMyIDQzLjA4NTcgMjg2Ljk5MyA0Mi42NCAyODcuNDk3IDQyLjA5MTRDMjg4LjAzNSA0MS41MDg2IDI4OC40MjIgNDAuODQgMjg4LjY1OCA0MC4wODU3QzI4OC44OTMgMzkuMjk3MSAyODkuMDExIDM4LjQ3NDMgMjg5LjAxMSAzNy42MTcxQzI4OS4wMTEgMzUuMzU0MyAyODguMzU1IDMzLjY3NDMgMjg3LjA0MyAzMi41NzcxQzI4NS43MzEgMzEuNDggMjgzLjcxMyAzMC45MzE0IDI4MC45ODkgMzAuOTMxNEgyNjguNDI2VjQzLjg0TDI4Mi40NTIgNDMuODkxNFpNMjY4LjQyNiA2MS4wNjg2SDI4MS40OTNDMjg3LjQxMyA2MS4wNjg2IDI5MC4zNzMgNTguNjY4NiAyOTAuMzczIDUzLjg2ODZDMjkwLjM3MyA1Mi45MDg2IDI5MC4yMjIgNTIgMjg5LjkxOSA1MS4xNDI5QzI4OS42NSA1MC4yODU3IDI4OS4xOTYgNDkuNTMxNCAyODguNTU3IDQ4Ljg4QzI4Ny45NTEgNDguMjI4NiAyODcuMTYxIDQ3LjcxNDMgMjg2LjE4NSA0Ny4zMzcxQzI4NS4yNDQgNDYuOTYgMjg0LjEgNDYuNzcxNCAyODIuNzU1IDQ2Ljc3MTRMMjY4LjQyNiA0Ni43MlY2MS4wNjg2WiIgZmlsbD0iI0VEMUE1NyI+PC9wYXRoPgo8cGF0aCBkPSJNMjQ3LjQ3NSA2NEMyNDUuNDU2IDY0IDI0My42MjIgNjMuNjQ1MSAyNDEuOTc0IDYyLjkzNTJDMjQwLjMyNSA2Mi4yMjU0IDIzOC44OTUgNjEuMjI4MiAyMzcuNjg0IDU5Ljk0MzdDMjM2LjUwNyA1OC42NTkyIDIzNS41OTggNTcuMTIxMSAyMzQuOTU5IDU1LjMyOTZDMjM0LjMyIDUzLjUwNDIgMjM0IDUxLjUwOTkgMjM0IDQ5LjM0NjVWMjhIMjM3LjAyOFY0OS40OTg2QzIzNy4wMjggNTEuMjU2MyAyMzcuMjggNTIuODQ1MSAyMzcuNzg1IDU0LjI2NDhDMjM4LjI5IDU1LjY4NDUgMjM4Ljk5NiA1Ni45MDE0IDIzOS45MDUgNTcuOTE1NUMyNDAuODQ3IDU4LjkyOTYgMjQxLjk1NyA1OS43MDcgMjQzLjIzNiA2MC4yNDc5QzI0NC41MTQgNjAuNzg4NyAyNDUuOTI3IDYxLjA1OTIgMjQ3LjQ3NSA2MS4wNTkyQzI0OS4wOSA2MS4wNTkyIDI1MC41MzYgNjAuNzg4NyAyNTEuODE1IDYwLjI0NzlDMjUzLjEyNyA1OS42NzMyIDI1NC4yMzcgNTguODc4OSAyNTUuMTQ2IDU3Ljg2NDhDMjU2LjA1NCA1Ni44NTA3IDI1Ni43NjEgNTUuNjMzOCAyNTcuMjY1IDU0LjIxNDFDMjU3Ljc3IDUyLjc5NDQgMjU4LjAyMiA1MS4yMzk0IDI1OC4wMjIgNDkuNTQ5M1YyOEgyNjFWNDkuMzQ2NUMyNjEgNTEuNTQzNyAyNjAuNjggNTMuNTM4IDI2MC4wNDEgNTUuMzI5NkMyNTkuNDAyIDU3LjEyMTEgMjU4LjQ3NyA1OC42NTkyIDI1Ny4yNjUgNTkuOTQzN0MyNTYuMDg4IDYxLjIyODIgMjU0LjY1OCA2Mi4yMjU0IDI1Mi45NzYgNjIuOTM1MkMyNTEuMzI3IDYzLjY0NTEgMjQ5LjQ5MyA2NCAyNDcuNDc1IDY0WiIgZmlsbD0iI0VEMUE1NyI+PC9wYXRoPgo8cGF0aCBkPSJNMjA5LjIzNyA2MS4wMTcxSDIzMS4zVjY0SDIwNi4xVjI4SDIwOS4yMzdWNjEuMDE3MVoiIGZpbGw9IiNFRDFBNTciPjwvcGF0aD4KPHBhdGggZD0iTTE4Ny41IDY0QzE4NS4wMzMgNjQgMTgyLjczMyA2My41NjY3IDE4MC42IDYyLjdDMTc4LjUgNjEuOCAxNzYuNjY3IDYwLjU2NjcgMTc1LjEgNTlDMTczLjUzMyA1Ny40IDE3Mi4zIDU1LjUgMTcxLjQgNTMuM0MxNzAuNTMzIDUxLjEgMTcwLjEgNDguNjY2NyAxNzAuMSA0NkMxNzAuMSA0My4zIDE3MC41MzMgNDAuODUgMTcxLjQgMzguNjVDMTcyLjMgMzYuNDE2NyAxNzMuNTE3IDM0LjUxNjcgMTc1LjA1IDMyLjk1QzE3Ni42MTcgMzEuMzgzMyAxNzguNDY3IDMwLjE2NjcgMTgwLjYgMjkuM0MxODIuNzMzIDI4LjQzMzMgMTg1LjAzMyAyOCAxODcuNSAyOEMxOTAuMiAyOCAxOTIuNjgzIDI4LjU2NjcgMTk0Ljk1IDI5LjdDMTk3LjIxNyAzMC44IDE5OS4wODMgMzIuNCAyMDAuNTUgMzQuNUwxOTggMzYuMUMxOTYuOCAzNC41IDE5NS4zNjcgMzMuMjMzMyAxOTMuNyAzMi4zQzE5Mi4wMzMgMzEuMzY2NyAxODkuOTY3IDMwLjkgMTg3LjUgMzAuOUMxODUuNDY3IDMwLjkgMTgzLjU2NyAzMS4yNjY3IDE4MS44IDMyQzE4MC4wNjcgMzIuNyAxNzguNTUgMzMuNyAxNzcuMjUgMzVDMTc1Ljk1IDM2LjMgMTc0LjkzMyAzNy44ODMzIDE3NC4yIDM5Ljc1QzE3My40NjcgNDEuNjE2NyAxNzMuMSA0My43IDE3My4xIDQ2QzE3My4xIDQ4LjI2NjcgMTczLjQ2NyA1MC4zMzMzIDE3NC4yIDUyLjJDMTc0Ljk2NyA1NC4wMzMzIDE3NiA1NS42MTY3IDE3Ny4zIDU2Ljk1QzE3OC42IDU4LjI4MzMgMTgwLjExNyA1OS4zMTY3IDE4MS44NSA2MC4wNUMxODMuNjE3IDYwLjc1IDE4NS41IDYxLjEgMTg3LjUgNjEuMUMxODkuNzY3IDYxLjEgMTkxLjc4MyA2MC42MzMzIDE5My41NSA1OS43QzE5NS4zMTcgNTguNzMzMyAxOTYuOCA1Ny40MTY3IDE5OCA1NS43NUwyMDAuNyA1N0MxOTkuMjY3IDU5LjIgMTk3LjQgNjAuOTE2NyAxOTUuMSA2Mi4xNUMxOTIuOCA2My4zODMzIDE5MC4yNjcgNjQgMTg3LjUgNjRaIiBmaWxsPSIjRUQxQTU3Ij48L3BhdGg+Cjwvc3ZnPg=="},"pro":{"dark":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzA2IiBoZWlnaHQ9IjkyIiB2aWV3Qm94PSIwIDAgMzA2IDkyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTY2LjI0OCAyNS42SDE3NC40OTJMMTkwLjc0IDY2LjRIMTgyLjc5N0wxNzkuMDM2IDU2LjMwNTJIMTYxLjU4NEwxNTcuOTEzIDY2LjRIMTQ5Ljk0TDE2Ni4yNDggMjUuNlpNMTc3LjAyIDUwLjgzNzFMMTcwLjM0IDMyLjc0TDE2My42MyA1MC44MzcxSDE3Ny4wMloiIGZpbGw9IndoaXRlIj48L3BhdGg+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTMyLjEyMiAyNS42QzEzNS4wNzIgMjUuNiAxMzcuNjUxIDI2LjEyNjIgMTM5Ljg1OSAyNy4xNzg2QzE0Mi4wODYgMjguMjMxIDE0My44MDIgMjkuNjg4MSAxNDUuMDA2IDMxLjU1QzE0Ni4yMTEgMzMuNDExOSAxNDYuODEzIDM1LjUxNjcgMTQ2LjgxMyAzNy44NjQzQzE0Ni44MTMgMzkuODI3NCAxNDYuNDMxIDQxLjU3OCAxNDUuNjY5IDQzLjExNjFDMTQ0LjkyNiA0NC42MzM5IDE0NC4wNCA0NS43MDA4IDE0Mi41OTggNDYuOTcxNEMxNDAuOTEzIDQ4LjQ1NiAxMzguNjE5IDQ5LjI5NjMgMTM2LjUxOSA0OS43NjcxTDE0Ny4zOSA2Ni40SDEzOS4yM0wxMjkuMDMgNTAuMzQxMUgxMjEuNjc2VjY2LjRIMTE0LjI0VjI1LjZIMTMyLjEyMlpNMTIxLjY3NiA0NC45MDcxSDEzMS4zNjlDMTMzLjk3OCA0NC45MDcxIDEzNS45OTUgNDQuMzMwNCAxMzcuNDIgNDMuMTc2OEMxMzguODQ1IDQyLjAwMyAxMzkuNTU4IDQwLjMwMyAxMzkuNTU4IDM4LjA3NjhDMTM5LjU1OCAzNS45MTEzIDEzOC44NTUgMzQuMjYxOSAxMzcuNDUgMzMuMTI4NkMxMzYuMDQ1IDMxLjk3NSAxMzMuOTg4IDMxLjM5ODIgMTMxLjI3OSAzMS4zOTgySDEyMS42NzZWNDQuOTA3MVoiIGZpbGw9IndoaXRlIj48L3BhdGg+CjxwYXRoIGQ9Ik03OS41NiAyNS42SDEwOC41NzhWMzEuNDI4Nkg4Ni45MjU0VjQyLjQ1NDhIMTA2LjQ3OFY0OC4xOTMySDg2LjkyNTRWNjAuNjMxNUgxMDkuMTRWNjYuNEg3OS41NlYyNS42WiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPHBhdGggZD0iTTQxLjgyIDI1LjZINTguNjc1MUM2My4zMzIzIDI1LjYgNjYuODU5OSAyNi41NTE0IDY5LjI1NzggMjguNDU0MkM3MS42NTU4IDMwLjMzNyA3Mi44NTQ4IDMyLjk3MDggNzIuODU0OCAzNi4zNTU4QzcyLjg1NDggMzguMjc4NyA3Mi4zNjkyIDM5Ljk2MTEgNzEuMzk4MSA0MS40MDMyQzcwLjQyNzEgNDIuODQ1NCA2OS4wNzk0IDQzLjk5NzEgNjcuMzU1MyA0NC44NTgzQzY4LjY0MzUgNDUuMjc4OSA2OS44MjI2IDQ1Ljk0OTkgNzAuODkyOCA0Ni44NzEzQzcxLjk4MjggNDcuNzcyNiA3Mi44NDQ4IDQ4Ljg4NDIgNzMuNDc5IDUwLjIwNjJDNzQuMTMzIDUxLjUyODEgNzQuNDYgNTIuOTcwMyA3NC40NiA1NC41MzI2Qzc0LjQ2IDU2LjgzNTkgNzMuOTE1IDU4Ljg4OSA3Mi44MjUgNjAuNjkxNkM3MS43NTQ5IDYyLjQ3NDIgNzAuMTg5MyA2My44NzYzIDY4LjEyODIgNjQuODk3OEM2Ni4wODcgNjUuODk5MyA2My42NDk0IDY2LjQgNjAuODE1NCA2Ni40SDQxLjgyVjI1LjZaTTU5LjU2NjkgNjAuNjMxNUM2MC44OTQ3IDYwLjYzMTUgNjIuMTAzNiA2MC4zOTEyIDYzLjE5MzYgNTkuOTEwNUM2NC4zMDM0IDU5LjQwOTcgNjUuMTc1MyA1OC42OTg3IDY1LjgwOTUgNTcuNzc3M0M2Ni40NjM1IDU2Ljg1NiA2Ni43OTA1IDU1Ljc3NDQgNjYuNzkwNSA1NC41MzI2QzY2Ljc5MDUgNTMuMzEwOCA2Ni40OTMyIDUyLjIyOTIgNjUuODk4NyA1MS4yODc4QzY1LjMwNDIgNTAuMzQ2NCA2NC40NTIgNDkuNjE1MyA2My4zNDIyIDQ5LjA5NDZDNjIuMjMyNCA0OC41NTM4IDYwLjkxNDUgNDguMjgzNCA1OS4zODg1IDQ4LjI4MzRINDkuMjIyVjYwLjYzMTVINTkuNTY2OVpNNTcuOTYxNiA0Mi41NDQ5QzYwLjE4MTIgNDIuNTQ0OSA2MS45MzUxIDQyLjA2NDIgNjMuMjIzMyA0MS4xMDI4QzY0LjUzMTMgNDAuMTQxNCA2NS4xODUyIDM4LjcyOTMgNjUuMTg1MiAzNi44NjY2QzY1LjE4NTIgMzUuMTQ0IDY0LjU5MDcgMzMuODEyMSA2My40MDE2IDMyLjg3MDdDNjIuMjMyNCAzMS45MDkzIDYwLjQ4ODQgMzEuNDI4NiA1OC4xNjk3IDMxLjQyODZINDkuMjIyVjQyLjU0NDlINTcuOTYxNloiIGZpbGw9IndoaXRlIj48L3BhdGg+CjxwYXRoIGQ9Ik0xNS42NzIxIDUwLjA4TDAgMjUuNkg4LjYxNjY3TDE5LjM4IDQyLjk0TDMwLjA4MzMgMjUuNkgzOC43NkwyMy4xNDc5IDUwLjA4VjY2LjRIMTUuNjcyMVY1MC4wOFoiIGZpbGw9IndoaXRlIj48L3BhdGg+CjxwYXRoIGQ9Ik0zMDAuODI2IDQ1Ljc5NEMzMDAuODI2IDUwLjA4NjkgMzAwLjA2MSA1My44MjMxIDI5OC41MzEgNTcuMDAyNUMyOTcuMDAyIDYwLjE2ODYgMjk0Ljg5NiA2Mi42MjM2IDI5Mi4yMTMgNjQuMzY3NkMyODkuNTQzIDY2LjA5ODIgMjg2LjQ3MSA2Ni45NjM1IDI4Mi45OTYgNjYuOTYzNUMyNzkuNTIyIDY2Ljk2MzUgMjc2LjQ0MyA2Ni4wOTgyIDI3My43NiA2NC4zNjc2QzI3MS4wOSA2Mi42MjM2IDI2OC45OTEgNjAuMTY4NiAyNjcuNDYxIDU3LjAwMjVDMjY1Ljk0NSA1My44MjMxIDI2NS4xODggNTAuMDg2OSAyNjUuMTg4IDQ1Ljc5NEMyNjUuMTg4IDQxLjUwMSAyNjUuOTQ1IDM3Ljc3MTUgMjY3LjQ2MSAzNC42MDU1QzI2OC45OTEgMzEuNDI2MSAyNzEuMDk3IDI4Ljk3MSAyNzMuNzggMjcuMjQwNUMyNzYuNDYzIDI1LjQ5NjUgMjc5LjUzNSAyNC42MjQ1IDI4Mi45OTYgMjQuNjI0NUMyODYuNDcxIDI0LjYyNDUgMjg5LjU0MyAyNS40OTY1IDI5Mi4yMTMgMjcuMjQwNUMyOTQuODk2IDI4Ljk3MSAyOTcuMDAyIDMxLjQyNjEgMjk4LjUzMSAzNC42MDU1QzMwMC4wNjEgMzcuNzcxNSAzMDAuODI2IDQxLjUwMSAzMDAuODI2IDQ1Ljc5NFpNMjk3LjE2MyA0NS43OTRDMjk3LjE2MyA0Mi4xMDQ3IDI5Ni41NDYgMzguOTQ1NCAyOTUuMzEyIDM2LjMxNkMyOTQuMDc4IDMzLjY3MzEgMjkyLjM5NCAzMS42NTQxIDI5MC4yNjEgMzAuMjU4OUMyODguMTI4IDI4Ljg2MzcgMjg1LjcwNiAyOC4xNjYxIDI4Mi45OTYgMjguMTY2MUMyODAuMyAyOC4xNjYxIDI3Ny44ODUgMjguODYzNyAyNzUuNzUyIDMwLjI1ODlDMjczLjYxOSAzMS42NTQxIDI3MS45MjkgMzMuNjY2NCAyNzAuNjgxIDM2LjI5NTlDMjY5LjQ0NyAzOC45MjUzIDI2OC44MyA0Mi4wOTEzIDI2OC44MyA0NS43OTRDMjY4LjgzIDQ5LjQ4MzIgMjY5LjQ0NyA1Mi42NDI1IDI3MC42ODEgNTUuMjcxOUMyNzEuOTE1IDU3LjkwMTQgMjczLjU5OSA1OS45MjA0IDI3NS43MzIgNjEuMzI5QzI3Ny44NjUgNjIuNzI0MiAyODAuMjg3IDYzLjQyMTggMjgyLjk5NiA2My40MjE4QzI4NS43MDYgNjMuNDIxOCAyODguMTI4IDYyLjcyNDIgMjkwLjI2MSA2MS4zMjlDMjkyLjQwNyA1OS45MzM4IDI5NC4wOTggNTcuOTIxNSAyOTUuMzMyIDU1LjI5MjFDMjk2LjU2NiA1Mi42NDkyIDI5Ny4xNzcgNDkuNDgzMiAyOTcuMTYzIDQ1Ljc5NFoiIGZpbGw9IiMxRjY2NjUiPjwvcGF0aD4KPHBhdGggZD0iTTIzMS4yOSA2Ni40VjI1LjE4NzlIMjQ0LjU5MkMyNDcuNTE2IDI1LjE4NzkgMjQ5Ljk1OCAyNS43MTc4IDI1MS45MTYgMjYuNzc3NkMyNTMuODg4IDI3LjgyNCAyNTUuMzcxIDI5LjI3OTYgMjU2LjM2NCAzMS4xNDQzQzI1Ny4zNyAzMi45OTU3IDI1Ny44NzMgMzUuMTIyIDI1Ny44NzMgMzcuNTIzNEMyNTcuODczIDM5LjkyNDcgMjU3LjM3IDQyLjA0NDQgMjU2LjM2NCA0My44ODIzQzI1NS4zNzEgNDUuNzIwMiAyNTMuODk1IDQ3LjE1NTYgMjUxLjkzNiA0OC4xODg2QzI0OS45NzggNDkuMjIxNiAyNDcuNTUgNDkuNzM4MSAyNDQuNjUyIDQ5LjczODFIMjMzLjMyM1Y0Ni4yOTdIMjQ0LjU1MUMyNDYuNjk4IDQ2LjI5NyAyNDguNDgyIDQ1Ljk0MTUgMjQ5LjkwNCA0NS4yMzA1QzI1MS4zMzkgNDQuNTE5NSAyNTIuNDA2IDQzLjUwNjYgMjUzLjEwNCA0Mi4xOTE5QzI1My44MTUgNDAuODc3MiAyNTQuMTcgMzkuMzIxIDI1NC4xNyAzNy41MjM0QzI1NC4xNyAzNS43MjU3IDI1My44MTUgMzQuMTU2MSAyNTMuMTA0IDMyLjgxNDZDMjUyLjM5MyAzMS40NTk2IDI1MS4zMTkgMzAuNDEzMiAyNDkuODg0IDI5LjY3NTNDMjQ4LjQ2MiAyOC45Mzc1IDI0Ni42NjQgMjguNTY4NiAyNDQuNDkxIDI4LjU2ODZIMjM1LjA1M1Y2Ni40SDIzMS4yOVpNMjQ5LjQ2MSA0Ny44MDYzTDI1OS42MDMgNjYuNEgyNTUuMjU3TDI0NS4yMTUgNDcuODA2M0gyNDkuNDYxWiIgZmlsbD0iIzFGNjY2NSI+PC9wYXRoPgo8cGF0aCBkPSJNMTk1Ljg3MyA2Ni40VjI1LjE4NzlIMjA5LjE3NUMyMTIuMDk5IDI1LjE4NzkgMjE0LjU0MSAyNS43NTEzIDIxNi41IDI2Ljg3ODJDMjE4LjQ3MiAyNy45OTE3IDIxOS45NTQgMjkuNTA3NyAyMjAuOTQ3IDMxLjQyNjFDMjIxLjk1MyAzMy4zNDQ1IDIyMi40NTYgMzUuNTA0MyAyMjIuNDU2IDM3LjkwNTdDMjIyLjQ1NiA0MC4zMDcxIDIyMS45NiA0Mi40NzM2IDIyMC45NjcgNDQuNDA1NUMyMTkuOTc0IDQ2LjMyMzkgMjE4LjQ5OSA0Ny44NDY1IDIxNi41NCA0OC45NzM0QzIxNC41ODEgNTAuMDg2OSAyMTIuMTQ2IDUwLjY0MzYgMjA5LjIzNSA1MC42NDM2SDE5OC43NzFWNDcuMjYyOUgyMDkuMTM1QzIxMS4yOTQgNDcuMjYyOSAyMTMuMDg1IDQ2Ljg2MDUgMjE0LjUwNyA0Ni4wNTU2QzIxNS45MyA0NS4yMzcyIDIxNi45ODkgNDQuMTIzNyAyMTcuNjg3IDQyLjcxNTFDMjE4LjM5OCA0MS4zMDY1IDIxOC43NTMgMzkuNzAzNCAyMTguNzUzIDM3LjkwNTdDMjE4Ljc1MyAzNi4xMDggMjE4LjM5OCAzNC41MDQ5IDIxNy42ODcgMzMuMDk2M0MyMTYuOTg5IDMxLjY4NzcgMjE1LjkyMyAzMC41ODA5IDIxNC40ODcgMjkuNzc2QzIxMy4wNjUgMjguOTcxIDIxMS4yNjEgMjguNTY4NiAyMDkuMDc0IDI4LjU2ODZIMTk5LjYzN1Y2Ni40SDE5NS44NzNaIiBmaWxsPSIjMUY2NjY1Ij48L3BhdGg+Cjwvc3ZnPg==","light":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzA2IiBoZWlnaHQ9IjkyIiB2aWV3Qm94PSIwIDAgMzA2IDkyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTY5LjEwOCAyNS45NjMxSDE3Ny40OTRMMTk0LjAyMSA2Ni4yNDQzSDE4NS45NDFMMTgyLjExNSA1Ni4yNzc4SDE2NC4zNjRMMTYwLjYzIDY2LjI0NDNIMTUyLjUxOUwxNjkuMTA4IDI1Ljk2MzFaTTE4MC4wNjUgNTAuODc5M0wxNzMuMjcgMzMuMDEyM0wxNjYuNDQ1IDUwLjg3OTNIMTgwLjA2NVoiIGZpbGw9IiMzNzM3MzgiPjwvcGF0aD4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMzQuMzk0IDI1Ljk2MzFDMTM3LjM5NSAyNS45NjMxIDE0MC4wMTkgMjYuNDgyNiAxNDIuMjY0IDI3LjUyMTZDMTQ0LjUzIDI4LjU2MDYgMTQ2LjI3NiAyOS45OTkyIDE0Ny41MDEgMzEuODM3NUMxNDguNzI2IDMzLjY3NTcgMTQ5LjMzOCAzNS43NTM3IDE0OS4zMzggMzguMDcxNUMxNDkuMzM4IDQwLjAwOTYgMTQ4Ljk1IDQxLjczNzkgMTQ4LjE3NCA0My4yNTY1QzE0Ny40MTkgNDQuNzU1IDE0Ni41MTggNDUuODA4MyAxNDUuMDUxIDQ3LjA2MjhDMTQzLjMzNyA0OC41Mjg1IDE0MS4wMDMgNDkuMzU4MSAxMzguODY3IDQ5LjgyMjlMMTQ5LjkyNSA2Ni4yNDQzSDE0MS42MjVMMTMxLjI0OSA1MC4zODk2SDEyMy43NjlWNjYuMjQ0M0gxMTYuMjA1VjI1Ljk2MzFIMTM0LjM5NFpNMTIzLjc2OSA0NS4wMjQ3SDEzMy42MjlDMTM2LjI4MyA0NS4wMjQ3IDEzOC4zMzUgNDQuNDU1MyAxMzkuNzg0IDQzLjMxNjRDMTQxLjIzMyA0Mi4xNTc1IDE0MS45NTggNDAuNDc5MSAxNDEuOTU4IDM4LjI4MTNDMTQxLjk1OCAzNi4xNDMzIDE0MS4yNDQgMzQuNTE0OSAxMzkuODE1IDMzLjM5NkMxMzguMzg2IDMyLjI1NzEgMTM2LjI5MyAzMS42ODc2IDEzMy41MzcgMzEuNjg3NkgxMjMuNzY5VjQ1LjAyNDdaIiBmaWxsPSIjMzczNzM4Ij48L3BhdGg+CjxwYXRoIGQ9Ik04MC45Mjg1IDI1Ljk2MzFIMTEwLjQ0NlYzMS43MTc2SDg4LjQyMDZWNDIuNjAzNkgxMDguMzA5VjQ4LjI2OUg4OC40MjA2VjYwLjU0OTJIMTExLjAxN1Y2Ni4yNDQzSDgwLjkyODVWMjUuOTYzMVoiIGZpbGw9IiMzNzM3MzgiPjwvcGF0aD4KPHBhdGggZD0iTTQyLjUzOTMgMjUuOTYzMUg1OS42ODQzQzY0LjQyMTYgMjUuOTYzMSA2OC4wMDk5IDI2LjkwMjQgNzAuNDQ5MSAyOC43ODFDNzIuODg4MyAzMC42Mzk5IDc0LjEwNzkgMzMuMjQwMiA3NC4xMDc5IDM2LjU4MjJDNzQuMTA3OSAzOC40ODA1IDczLjYxNCA0MC4xNDE2IDcyLjYyNjIgNDEuNTY1NEM3MS42Mzg1IDQyLjk4OTIgNzAuMjY3NyA0NC4xMjYyIDY4LjUxMzkgNDQuOTc2NUM2OS44MjQyIDQ1LjM5MTggNzEuMDIzNiA0Ni4wNTQzIDcyLjExMjIgNDYuOTYzOUM3My4yMjA5IDQ3Ljg1MzggNzQuMDk3OCA0OC45NTEzIDc0Ljc0MjkgNTAuMjU2NEM3NS40MDgyIDUxLjU2MTUgNzUuNzQwOCA1Mi45ODUzIDc1Ljc0MDggNTQuNTI3N0M3NS43NDA4IDU2LjgwMTggNzUuMTg2NCA1OC44Mjg4IDc0LjA3NzcgNjAuNjA4NUM3Mi45ODkxIDYyLjM2ODQgNzEuMzk2NiA2My43NTI3IDY5LjMwMDEgNjQuNzYxMkM2Ny4yMjM3IDY1Ljc0OTkgNjQuNzQ0MiA2Ni4yNDQzIDYxLjg2MTUgNjYuMjQ0M0g0Mi41MzkzVjI1Ljk2MzFaTTYwLjU5MTUgNjAuNTQ5MkM2MS45NDIxIDYwLjU0OTIgNjMuMTcxOCA2MC4zMTE5IDY0LjI4MDUgNTkuODM3M0M2NS40MDk0IDU5LjM0MjkgNjYuMjk2NCA1OC42NDA5IDY2Ljk0MTUgNTcuNzMxM0M2Ny42MDY3IDU2LjgyMTYgNjcuOTM5MyA1NS43NTM4IDY3LjkzOTMgNTQuNTI3N0M2Ny45MzkzIDUzLjMyMTUgNjcuNjM3IDUyLjI1MzcgNjcuMDMyMiA1MS4zMjQyQzY2LjQyNzQgNTAuMzk0OCA2NS41NjA2IDQ5LjY3MyA2NC40MzE3IDQ5LjE1ODlDNjMuMzAyOCA0OC42MjUgNjEuOTYyMyA0OC4zNTggNjAuNDEwMSA0OC4zNThINTAuMDY4NlY2MC41NDkySDYwLjU5MTVaTTU4Ljk1ODYgNDIuNjkyNkM2MS4yMTY0IDQyLjY5MjYgNjMuMDAwNSA0Mi4yMTggNjQuMzEwOCA0MS4yNjg4QzY1LjY0MTMgNDAuMzE5NiA2Ni4zMDY1IDM4LjkyNTUgNjYuMzA2NSAzNy4wODY0QzY2LjMwNjUgMzUuMzg1OCA2NS43MDE3IDM0LjA3MDggNjQuNDkyMiAzMy4xNDE0QzYzLjMwMjggMzIuMTkyMiA2MS41Mjg5IDMxLjcxNzYgNTkuMTcwMyAzMS43MTc2SDUwLjA2ODZWNDIuNjkyNkg1OC45NTg2WiIgZmlsbD0iIzM3MzczOCI+PC9wYXRoPgo8cGF0aCBkPSJNMTUuOTQxNyA1MC4xMzE4TDAgMjUuOTYzMUg4Ljc2NDg4TDE5LjcxMzQgNDMuMDgyNkwzMC42MDA3IDI1Ljk2MzFIMzkuNDI2N0wyMy41NDYxIDUwLjEzMThWNjYuMjQ0M0gxNS45NDE3VjUwLjEzMThaIiBmaWxsPSIjMzczNzM4Ij48L3BhdGg+CjxwYXRoIGQ9Ik0zMDYgNDUuOTAwM0MzMDYgNTAuMTM4NiAzMDUuMjIyIDUzLjgyNzMgMzAzLjY2NiA1Ni45NjYzQzMwMi4xMTEgNjAuMDkyMSAyOTkuOTY4IDYyLjUxNTkgMjk3LjIzOSA2NC4yMzc3QzI5NC41MjQgNjUuOTQ2MyAyOTEuMzk5IDY2LjgwMDYgMjg3Ljg2NCA2Ni44MDA2QzI4NC4zMyA2Ni44MDA2IDI4MS4xOTggNjUuOTQ2MyAyNzguNDY5IDY0LjIzNzdDMjc1Ljc1MyA2Mi41MTU5IDI3My42MTggNjAuMDkyMSAyNzIuMDYyIDU2Ljk2NjNDMjcwLjUyIDUzLjgyNzMgMjY5Ljc0OSA1MC4xMzg2IDI2OS43NDkgNDUuOTAwM0MyNjkuNzQ5IDQxLjY2MTkgMjcwLjUyIDM3Ljk3OTkgMjcyLjA2MiAzNC44NTQxQzI3My42MTggMzEuNzE1MSAyNzUuNzYgMjkuMjkxMyAyNzguNDg5IDI3LjU4MjdDMjgxLjIxOSAyNS44NjA5IDI4NC4zNDQgMjUgMjg3Ljg2NCAyNUMyOTEuMzk5IDI1IDI5NC41MjQgMjUuODYwOSAyOTcuMjM5IDI3LjU4MjdDMjk5Ljk2OCAyOS4yOTEzIDMwMi4xMTEgMzEuNzE1MSAzMDMuNjY2IDM0Ljg1NDFDMzA1LjIyMiAzNy45Nzk5IDMwNiA0MS42NjE5IDMwNiA0NS45MDAzWk0zMDIuMjc1IDQ1LjkwMDNDMzAyLjI3NSA0Mi4yNTc5IDMwMS42NDcgMzkuMTM4OCAzMDAuMzkxIDM2LjU0MjhDMjk5LjEzNiAzMy45MzM2IDI5Ny40MjMgMzEuOTQwMiAyOTUuMjU0IDMwLjU2MjhDMjkzLjA4NCAyOS4xODUzIDI5MC42MjEgMjguNDk2NiAyODcuODY0IDI4LjQ5NjZDMjg1LjEyMSAyOC40OTY2IDI4Mi42NjUgMjkuMTg1MyAyODAuNDk1IDMwLjU2MjhDMjc4LjMyNiAzMS45NDAyIDI3Ni42MDYgMzMuOTI3IDI3NS4zMzcgMzYuNTIyOUMyNzQuMDgyIDM5LjExODkgMjczLjQ1NCA0Mi4yNDQ3IDI3My40NTQgNDUuOTAwM0MyNzMuNDU0IDQ5LjU0MjYgMjc0LjA4MiA1Mi42NjE3IDI3NS4zMzcgNTUuMjU3N0MyNzYuNTkzIDU3Ljg1MzcgMjc4LjMwNSA1OS44NDcgMjgwLjQ3NSA2MS4yMzc3QzI4Mi42NDUgNjIuNjE1MiAyODUuMTA4IDYzLjMwMzkgMjg3Ljg2NCA2My4zMDM5QzI5MC42MjEgNjMuMzAzOSAyOTMuMDg0IDYyLjYxNTIgMjk1LjI1NCA2MS4yMzc3QzI5Ny40MzcgNTkuODYwMyAyOTkuMTU2IDU3Ljg3MzYgMzAwLjQxMiA1NS4yNzc2QzMwMS42NjcgNTIuNjY4NCAzMDIuMjg4IDQ5LjU0MjYgMzAyLjI3NSA0NS45MDAzWiIgZmlsbD0iIzFGNjY2NSI+PC9wYXRoPgo8cGF0aCBkPSJNMjM1LjI2OSA2Ni4yNDQzVjI1LjU1NjNIMjQ4Ljc5OUMyNTEuNzc0IDI1LjU1NjMgMjU0LjI1NyAyNi4wNzk0IDI1Ni4yNDkgMjcuMTI1OEMyNTguMjU1IDI4LjE1ODkgMjU5Ljc2MyAyOS41OTU5IDI2MC43NzMgMzEuNDM3QzI2MS43OTcgMzMuMjY0NyAyNjIuMzA4IDM1LjM2NDEgMjYyLjMwOCAzNy43MzQ5QzI2Mi4zMDggNDAuMTA1NyAyNjEuNzk3IDQyLjE5ODQgMjYwLjc3MyA0NC4wMTI5QzI1OS43NjMgNDUuODI3NCAyNTguMjYyIDQ3LjI0NDYgMjU2LjI3IDQ4LjI2NDVDMjU0LjI3OCA0OS4yODQzIDI1MS44MDggNDkuNzk0MyAyNDguODYgNDkuNzk0M0gyMzcuMzM2VjQ2LjM5N0gyNDguNzU4QzI1MC45NDEgNDYuMzk3IDI1Mi43NTYgNDYuMDQ2IDI1NC4yMDMgNDUuMzQ0QzI1NS42NjMgNDQuNjQyIDI1Ni43NDggNDMuNjQyMSAyNTcuNDU3IDQyLjM0NDFDMjU4LjE4IDQxLjA0NjEgMjU4LjU0MiAzOS41MDk3IDI1OC41NDIgMzcuNzM0OUMyNTguNTQyIDM1Ljk2MDEgMjU4LjE4IDM0LjQxMDQgMjU3LjQ1NyAzMy4wODU5QzI1Ni43MzQgMzEuNzQ4MiAyNTUuNjQyIDMwLjcxNTEgMjU0LjE4MiAyOS45ODY3QzI1Mi43MzYgMjkuMjU4MiAyNTAuOTA3IDI4Ljg5NCAyNDguNjk2IDI4Ljg5NEgyMzkuMDk2VjY2LjI0NDNIMjM1LjI2OVpNMjUzLjc1MiA0Ny44ODdMMjY0LjA2OSA2Ni4yNDQzSDI1OS42NDdMMjQ5LjQzMyA0Ny44ODdIMjUzLjc1MloiIGZpbGw9IiMxRjY2NjUiPjwvcGF0aD4KPHBhdGggZD0iTTE5OS4yNDMgNjYuMjQ0M1YyNS41NTYySDIxMi43NzNDMjE1Ljc0OCAyNS41NTYyIDIxOC4yMzEgMjYuMTEyNSAyMjAuMjI0IDI3LjIyNTFDMjIyLjIzIDI4LjMyNDQgMjIzLjczOCAyOS44MjExIDIyNC43NDcgMzEuNzE1MUMyMjUuNzcxIDMzLjYwOTEgMjI2LjI4MyAzNS43NDE1IDIyNi4yODMgMzguMTEyM0MyMjYuMjgzIDQwLjQ4MzEgMjI1Ljc3OCA0Mi42MjIyIDIyNC43NjggNDQuNTI5NEMyMjMuNzU4IDQ2LjQyMzQgMjIyLjI1NyA0Ny45MjY3IDIyMC4yNjUgNDkuMDM5M0MyMTguMjcyIDUwLjEzODYgMjE1Ljc5NSA1MC42ODgzIDIxMi44MzQgNTAuNjg4M0gyMDIuMTlWNDcuMzUwNkgyMTIuNzMyQzIxNC45MjkgNDcuMzUwNiAyMTYuNzUxIDQ2Ljk1MzIgMjE4LjE5NyA0Ni4xNTg1QzIxOS42NDQgNDUuMzUwNiAyMjAuNzIyIDQ0LjI1MTMgMjIxLjQzMSA0Mi44NjA2QzIyMi4xNTUgNDEuNDY5OSAyMjIuNTE2IDM5Ljg4NzEgMjIyLjUxNiAzOC4xMTIzQzIyMi41MTYgMzYuMzM3NSAyMjIuMTU1IDM0Ljc1NDggMjIxLjQzMSAzMy4zNjQxQzIyMC43MjIgMzEuOTczNCAyMTkuNjM3IDMwLjg4MDcgMjE4LjE3NyAzMC4wODZDMjE2LjczIDI5LjI5MTMgMjE0Ljg5NSAyOC44OTM5IDIxMi42NzEgMjguODkzOUgyMDMuMDdWNjYuMjQ0M0gxOTkuMjQzWiIgZmlsbD0iIzFGNjY2NSI+PC9wYXRoPgo8L3N2Zz4="}}</script>
+<script>
+/* ===== Visualizador (não faz parte do padrão dos slides) ===== */
+const LOGOS = JSON.parse(document.getElementById('logos-data').textContent);
+const slides = [...document.querySelectorAll('#stage .slide')];
+let atual = 0;
+
+function aplicarTema() {
+  const t = document.body.dataset.marca;
+  const m = document.body.dataset.tom;
+  const uri = (LOGOS[t] && LOGOS[t][m]) || '';
+  document.querySelectorAll('img[data-logo]').forEach(img => { img.src = uri; });
+}
+function mostrar(i) {
+  atual = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, j) => s.classList.toggle('ativo', j === atual));
+  document.getElementById('contador').textContent = (atual + 1) + ' / ' + slides.length + '  ·  ← →';
+  escalar();
+}
+function escalar() {
+  const cheia = !!document.fullscreenElement;
+  /* Em tela cheia o slide ocupa a tela inteira; fora dela, uma folga de moldura */
+  const s = cheia
+    ? Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
+    : Math.min(window.innerWidth / 1960, window.innerHeight / 1140);
+  if (!(s > 0) || !isFinite(s)) { requestAnimationFrame(escalar); return; }
+  slides[atual].style.transform = 'scale(' + s + ')';
+}
+function telaCheia() {
+  document.body.classList.remove('drawer-aberto');
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen();
+}
+document.getElementById('btn-config').addEventListener('click', () => document.body.classList.toggle('drawer-aberto'));
+document.getElementById('btn-fechar').addEventListener('click', () => document.body.classList.remove('drawer-aberto'));
+document.getElementById('btn-tela').addEventListener('click', telaCheia);
+document.addEventListener('fullscreenchange', escalar);
+document.getElementById('sel-tema').addEventListener('change', e => { document.body.dataset.marca = e.target.value; aplicarTema(); });
+document.getElementById('sel-modo').addEventListener('change', e => { document.body.dataset.tom = e.target.value; aplicarTema(); });
+window.addEventListener('resize', escalar);
+window.addEventListener('load', escalar);
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { document.body.classList.remove('drawer-aberto'); return; }
+  if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') mostrar(atual + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') mostrar(atual - 1);
+  if (e.key === 'f' || e.key === 'F') telaCheia();
+});
+window.addEventListener('click', e => {
+  if (e.target.closest('#hud') || e.target.closest('#drawer')) return;
+  if (document.body.classList.contains('drawer-aberto')) { document.body.classList.remove('drawer-aberto'); return; }
+  mostrar(e.clientX > window.innerWidth / 2 ? atual + 1 : atual - 1);
+});
+function numerar() {
+  document.querySelectorAll('[data-pagina]').forEach(el => {
+    const s = el.closest('.slide');
+    const i = slides.indexOf(s);
+    if (i >= 0) el.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+  });
+}
+aplicarTema();
+numerar();
+mostrar(0);
+</script>
+</body>
+</html>

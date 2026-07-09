@@ -1,0 +1,64 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { deckSchema } from "@/lib/schema";
+import { renderDeck } from "@/lib/renderer";
+import { createClient } from "@/lib/supabase/server";
+
+const bodySchema = z.object({
+  sourceId: z.string().uuid(),
+  deck: deckSchema,
+});
+
+// Salva um deck editado como NOVA versão no histórico (o original é imutável).
+// Não chama a IA e não conta no limite diário de gerações (origem = 'edicao').
+export async function POST(request: Request) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ erro: "Sessão expirada. Entre de novo.", codigo: "sessao" }, { status: 401 });
+  }
+
+  let body;
+  try {
+    body = bodySchema.parse(await request.json());
+  } catch {
+    return NextResponse.json({ erro: "Conteúdo editado inválido", codigo: "briefing" }, { status: 400 });
+  }
+
+  // Herda o briefing do deck de origem
+  const { data: origem } = await supabase
+    .from("decks")
+    .select("briefing")
+    .eq("id", body.sourceId)
+    .single();
+  if (!origem) {
+    return NextResponse.json({ erro: "Apresentação de origem não encontrada", codigo: "interno" }, { status: 404 });
+  }
+
+  // O HTML é sempre re-renderizado no servidor — nunca aceito do client
+  const html = renderDeck(body.deck);
+
+  const { data: saved, error } = await supabase
+    .from("decks")
+    .insert({
+      user_id: user.id,
+      autor_email: user.email ?? "",
+      titulo: body.deck.titulo,
+      marca: body.deck.marca,
+      modo: body.deck.modo,
+      briefing: origem.briefing,
+      slides: body.deck.slides,
+      html,
+      origem: "edicao",
+    })
+    .select("id")
+    .single();
+  if (error || !saved) {
+    console.error("[decks] erro ao salvar versão editada:", error?.message);
+    return NextResponse.json({ erro: "Não foi possível salvar a nova versão", codigo: "interno" }, { status: 500 });
+  }
+
+  return NextResponse.json({ id: saved.id });
+}

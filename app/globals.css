@@ -1,26 +1,104 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Tokens do padrão Ybera aplicados à UI do app (fundo, tinta, hairlines, acentos de marca) */
+@theme {
+  --color-fundo: rgb(5, 5, 5);
+  --color-painel: rgb(12, 12, 13);
+  --color-tinta: rgb(250, 249, 252);
+  --color-tinta2: rgb(224, 223, 226);
+  --color-tinta3: rgb(176, 175, 178);
+  --color-tinta4: rgb(108, 107, 110);
+  --color-fio: rgba(250, 249, 252, 0.08);
+  --color-fio18: rgba(250, 249, 252, 0.18);
+  --color-fio25: rgba(250, 249, 252, 0.25);
+  --color-erro: rgb(220, 76, 100);
+
+  /* Acentos por marca — mesmos valores do template de referência (data-tom dark) */
+  --color-marca-group: rgb(201, 200, 204);
+  --color-marca-ybera: rgb(176, 175, 178);
+  --color-marca-club: rgb(199, 15, 67);
+  --color-marca-pro: #1f6665;
 }
 
+/* Tokens que referenciam variáveis de runtime (next/font) precisam ser inline —
+   sem isto o Tailwind não os resolve e o app cai em fonte de sistema. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-syne), sans-serif;
+  --font-body: var(--font-nunito), sans-serif;
+  --font-mono: var(--font-dm-mono), monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Vinheta sutil no topo — profundidade sem quebrar a sobriedade */
+  background: linear-gradient(to bottom, rgb(10, 10, 11), var(--color-fundo) 360px) fixed;
+  color: var(--color-tinta);
+  font-family: var(--font-nunito), sans-serif;
+}
+
+::selection {
+  background: rgba(250, 249, 252, 0.2);
+}
+
+/* Foco visível consistente (teclado) sem poluir o clique */
+:where(a, button, input, textarea, select):focus-visible {
+  outline: 1px solid var(--color-fio25);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---- Movimento: uma entrada orquestrada por página, nada espalhado ---- */
+@keyframes surgir {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.surgir {
+  animation: surgir 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.surgir-2 {
+  animation-delay: 0.08s;
+}
+.surgir-3 {
+  animation-delay: 0.16s;
+}
+
+/* Pulso do indicador de atividade (tela de geração) */
+@keyframes pulsar {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Barra indeterminada em hairline */
+@keyframes varrer {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(420%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .surgir,
+  .surgir-2,
+  .surgir-3 {
+    animation: none;
+  }
 }
