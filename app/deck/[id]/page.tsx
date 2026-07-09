@@ -46,6 +46,7 @@ export default async function DeckPage({ params }: { params: Promise<{ id: strin
         titulo={deck.titulo}
         actions={
           <Link
+            key="editar"
             href={`/deck/${deck.id}/editar`}
             className="rounded-full border border-fio18 px-5 py-2 font-mono text-xs tracking-[0.12em] text-tinta3 hover:border-fio25 hover:text-tinta2"
           >

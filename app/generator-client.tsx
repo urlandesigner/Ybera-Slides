@@ -100,6 +100,7 @@ export function GeneratorClient() {
           actions={
             <>
               <a
+                key="editar"
                 href={`/deck/${resultado.id}/editar`}
                 className="rounded-full border border-fio18 px-5 py-2 font-mono text-xs tracking-[0.12em] text-tinta3 transition-colors hover:border-fio25 hover:text-tinta2"
               >
