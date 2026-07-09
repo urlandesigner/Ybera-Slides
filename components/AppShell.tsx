@@ -38,7 +38,7 @@ export function AppShell({
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
           <div className="flex items-center gap-10">
             <Link href="/" className="flex items-center gap-3 text-tinta">
-              <LogoYbera className="h-6 w-auto" />
+              <LogoYbera className="h-7 w-auto" />
               <span className="hidden font-mono text-[10px] tracking-[0.18em] text-tinta4 sm:inline">
                 GERADOR DE APRESENTAÇÕES
               </span>

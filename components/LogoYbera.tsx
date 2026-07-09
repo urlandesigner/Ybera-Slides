@@ -1,11 +1,12 @@
 // Logo oficial Ybera (wordmark). fill="currentColor" para acompanhar o tema —
 // herda a cor do texto do elemento pai (tinta no dark e no light).
-// viewBox ajustado de 306 para 194 de largura: corta apenas a área vazia à
-// direita das letras (os paths do arquivo oficial estão intactos).
+// viewBox ajustado do original (306×92): corta apenas a área vazia ao redor
+// das letras — à direita e acima/abaixo (os paths do arquivo oficial estão
+// intactos). Assim a altura declarada no className corresponde às letras.
 export function LogoYbera({ className }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 194 92"
+      viewBox="0 10 194 72"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
