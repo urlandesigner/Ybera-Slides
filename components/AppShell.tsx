@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LogoYbera } from "@/components/LogoYbera";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 function NavLink({ href, ativo, children }: { href: string; ativo: boolean; children: string }) {
@@ -34,10 +35,10 @@ export function AppShell({
   return (
     <div className="min-h-screen">
       <header className="border-b border-fio">
-        <div className="mx-auto flex max-w-5xl items-baseline justify-between px-6 py-5">
-          <div className="flex items-baseline gap-10">
-            <Link href="/" className="flex items-baseline gap-3">
-              <span className="font-display text-lg font-semibold tracking-tight">Ybera</span>
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
+          <div className="flex items-center gap-10">
+            <Link href="/" className="flex items-center gap-3 text-tinta">
+              <LogoYbera className="h-6 w-auto" />
               <span className="hidden font-mono text-[10px] tracking-[0.18em] text-tinta4 sm:inline">
                 GERADOR DE APRESENTAÇÕES
               </span>
