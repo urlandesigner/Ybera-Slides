@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { buscarDecks, type Filtro } from "@/lib/decks-lista";
 import { deckSchema } from "@/lib/schema";
 import { renderDeck } from "@/lib/renderer";
 import { createClient } from "@/lib/supabase/server";
@@ -8,6 +9,28 @@ const bodySchema = z.object({
   sourceId: z.string().uuid(),
   deck: deckSchema,
 });
+
+// Troca de aba (Públicas/Minhas) no cliente — busca sob demanda, com cache
+// no componente cliente, pra não refazer a consulta a cada clique na aba.
+export async function GET(request: Request) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ erro: "Sessão expirada. Entre de novo." }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const filtro: Filtro = searchParams.get("filtro") === "minhas" ? "minhas" : "publicas";
+
+  const { decks, erro } = await buscarDecks(supabase, filtro, user.id);
+  if (erro || !decks) {
+    return NextResponse.json({ erro: "Não foi possível carregar as apresentações." }, { status: 500 });
+  }
+
+  return NextResponse.json({ decks });
+}
 
 // Salva um deck editado como NOVA versão no histórico (o original é imutável).
 // Não chama a IA e não conta no limite diário de gerações (origem = 'edicao').
