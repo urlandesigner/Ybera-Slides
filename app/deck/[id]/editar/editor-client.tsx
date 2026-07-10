@@ -179,7 +179,7 @@ export function EditorClient({
 
   return (
     <div className="grid gap-10 lg:grid-cols-[400px_1fr]">
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 rounded-xl border border-fio-card bg-painel px-6 py-8 sm:px-8">
         {/* Cada etapa (título, marca, modo, visibilidade) com rótulo próprio
             e respiro entre grupos — mesmo padrão do formulário de geração. */}
         <div className="flex flex-col gap-7 border-b border-fio pb-8">

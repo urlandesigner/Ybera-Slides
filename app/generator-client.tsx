@@ -195,7 +195,7 @@ export function GeneratorClient() {
           e.preventDefault();
           gerar();
         }}
-        className="flex flex-col gap-9 rounded-xl border border-fio-card bg-painel px-6 py-8 [box-shadow:var(--sombra-card)] sm:px-10 sm:py-10"
+        className="flex flex-col gap-9 rounded-xl border border-fio-card bg-painel px-6 py-8 sm:px-10 sm:py-10"
       >
         <Field numero="01" label="MARCA">
           <BrandPicker name="Marca" options={MARCAS} value={marca} onChange={setMarca} />
