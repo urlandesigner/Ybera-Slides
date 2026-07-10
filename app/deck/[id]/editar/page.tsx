@@ -15,10 +15,12 @@ export default async function EditarDeckPage({ params }: { params: Promise<{ id:
   const { id } = await params;
   const { data: row } = await supabase
     .from("decks")
-    .select("id, titulo, marca, modo, slides, visibilidade")
+    .select("id, titulo, marca, modo, slides, visibilidade, user_id")
     .eq("id", id)
     .single();
   if (!row) notFound();
+  // Editar é ação de dono — visualizar/baixar continuam livres pra apresentações públicas.
+  if (row.user_id !== user.id) notFound();
 
   const parsed = deckSchema.safeParse({
     titulo: row.titulo,

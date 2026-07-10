@@ -53,11 +53,18 @@ export async function POST(request: Request) {
   // Herda briefing e visibilidade do deck de origem
   const { data: origem } = await supabase
     .from("decks")
-    .select("briefing, visibilidade")
+    .select("briefing, visibilidade, user_id")
     .eq("id", body.sourceId)
     .single();
   if (!origem) {
     return NextResponse.json({ erro: "Apresentação de origem não encontrada", codigo: "interno" }, { status: 404 });
+  }
+  // Editar é ação de dono — mesmo apresentações públicas só o autor pode salvar nova versão.
+  if (origem.user_id !== user.id) {
+    return NextResponse.json(
+      { erro: "Você não tem permissão para editar esta apresentação", codigo: "permissao" },
+      { status: 403 }
+    );
   }
 
   // O HTML é sempre re-renderizado no servidor — nunca aceito do client

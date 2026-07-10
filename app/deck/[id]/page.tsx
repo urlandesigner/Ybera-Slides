@@ -42,9 +42,11 @@ export default async function DeckPage({ params }: { params: Promise<{ id: strin
         titulo={deck.titulo}
         navegavel
         actions={
-          <Button key="editar" href={`/deck/${deck.id}/editar`}>
-            EDITAR
-          </Button>
+          ehDono ? (
+            <Button key="editar" href={`/deck/${deck.id}/editar`}>
+              EDITAR
+            </Button>
+          ) : undefined
         }
       />
       <div className="mt-10 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
