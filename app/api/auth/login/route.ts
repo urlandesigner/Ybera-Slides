@@ -4,7 +4,8 @@ import { resolveAppOrigin } from "@/lib/auth/app-origin";
 import { createClient } from "@/lib/supabase/server";
 
 // Validação do domínio NO SERVIDOR — o client também valida, mas esta é a barreira real.
-const ALLOWED_DOMAIN = process.env.ALLOWED_EMAIL_DOMAIN ?? "ybera.com";
+// Fixo por decisão de produto: só a equipe Ybera entra.
+const ALLOWED_DOMAIN = "ybera.com";
 
 const bodySchema = z.object({ email: z.string().email("E-mail inválido") });
 

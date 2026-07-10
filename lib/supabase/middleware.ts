@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 // Rotas acessíveis sem sessão
-const PUBLIC_PATHS = ["/login", "/auth", "/api/auth", "/teste-links"];
+const PUBLIC_PATHS = ["/login", "/auth", "/api/auth"];
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
