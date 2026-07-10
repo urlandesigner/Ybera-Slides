@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { DeckListItem } from "@/components/DeckListItem";
 import { EmptyState } from "@/components/EmptyState";
+import { renderDeck } from "@/lib/renderer";
+import type { Slide } from "@/lib/schema";
 import { createClient } from "@/lib/supabase/server";
 
 type Filtro = "minhas" | "publicas";
@@ -50,7 +52,7 @@ export default async function ApresentacoesPage({
 
   const query = supabase
     .from("decks")
-    .select("id, titulo, marca, html, autor_email, created_at, visibilidade")
+    .select("id, titulo, marca, modo, slides, autor_email, created_at, visibilidade")
     .order("created_at", { ascending: false })
     .limit(200);
 
@@ -89,19 +91,26 @@ export default async function ApresentacoesPage({
         />
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {decks.map((d) => (
-            <DeckListItem
-              key={d.id}
-              id={d.id}
-              titulo={d.titulo}
-              marca={d.marca}
-              html={d.html}
-              autorEmail={d.autor_email}
-              createdAt={d.created_at}
-              visibilidade={filtro === "minhas" ? d.visibilidade : undefined}
-              mostrarAutor={filtro !== "minhas"}
-            />
-          ))}
+          {decks.map((d) => {
+            // Miniatura = só a capa (1º slide) renderizada isoladamente — evita
+            // transferir e embutir o deck inteiro (todos os slides) só pra
+            // mostrar uma prévia na listagem.
+            const primeiroSlide = (d.slides as Slide[])[0];
+            const capa = renderDeck({ titulo: d.titulo, marca: d.marca, modo: d.modo, slides: [primeiroSlide] });
+            return (
+              <DeckListItem
+                key={d.id}
+                id={d.id}
+                titulo={d.titulo}
+                marca={d.marca}
+                html={capa}
+                autorEmail={d.autor_email}
+                createdAt={d.created_at}
+                visibilidade={filtro === "minhas" ? d.visibilidade : undefined}
+                mostrarAutor={filtro !== "minhas"}
+              />
+            );
+          })}
         </div>
       )}
     </AppShell>
