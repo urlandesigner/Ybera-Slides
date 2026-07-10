@@ -33,6 +33,13 @@ export function AppShell({
         </div>
       </header>
       <main className="surgir mx-auto max-w-5xl px-5 py-8 sm:px-6 sm:py-12">{children}</main>
+      <footer className="border-t border-fio">
+        <div className="mx-auto max-w-5xl px-5 py-6 sm:px-6">
+          <p className="font-mono text-xs tracking-[0.1em] text-tinta4">
+            FERRAMENTA INTERNA DO GRUPO YBERA — CONTEÚDO CONFIDENCIAL, NÃO DIVULGAR FORA DA EMPRESA.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
