@@ -21,7 +21,6 @@ export default async function LoginPage({
 
   const { erro } = await searchParams;
   const aviso = erro ? (AVISOS[erro] ?? null) : null;
-  const ano = new Date().getFullYear();
 
   return (
     <div className="relative flex min-h-screen items-center justify-center px-6">
@@ -29,21 +28,21 @@ export default async function LoginPage({
         <ThemeToggle />
       </div>
       <div className="surgir w-full max-w-md">
-        {/* Eco da capa dos decks: logo oficial + selo com ponto de acento + display Syne */}
+        {/* Eco da capa dos decks: selo + logo oficial + display Syne */}
         <div className="mb-12 flex flex-col gap-6">
-          <LogoYbera className="h-10 w-auto self-start text-tinta" />
           <div className="flex w-fit items-center gap-2.5 rounded-full border border-fio18 px-4 py-1.5">
             <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-tinta3" />
             <span className="font-mono text-[10px] tracking-[0.18em] text-tinta3">
-              FERRAMENTA INTERNA · {ano}
+              FERRAMENTA INTERNA
             </span>
           </div>
+          <LogoYbera className="h-10 w-auto self-start text-tinta" />
           <div className="flex flex-col gap-2">
             <h1 className="font-display text-4xl font-semibold tracking-tight text-balance">
               Gerador de Apresentações
             </h1>
             <p className="text-tinta3">
-              Briefing entra, apresentação no padrão Ybera sai.
+              Escreva um briefing curto e receba uma apresentação pronta no padrão visual da Ybera.
             </p>
           </div>
           <div className="border-t border-fio18" />
