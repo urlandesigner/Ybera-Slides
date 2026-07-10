@@ -142,9 +142,9 @@ export const briefingSchema = z.object({
   marca: marcaSchema,
   modo: modoSchema,
   assunto: z.string().min(3, "Descreva o assunto da apresentação"),
-  publico: z.string().min(3, "Descreva o público-alvo"),
-  numSlides: z.union([z.literal(10), z.literal(14), z.literal(18)]),
-  conteudo: z.string().min(40, "Cole o conteúdo a cobrir — pontos, dados e fatos"),
+  publico: z.string().min(3, "Descreva o público-alvo").default("Equipe interna"),
+  numSlides: z.union([z.literal(5), z.literal(10), z.literal(15), z.literal(20)]),
+  conteudo: z.string().trim().min(1, "Cole o conteúdo a cobrir — pontos, dados e fatos"),
 });
 
 export type Briefing = z.infer<typeof briefingSchema>;

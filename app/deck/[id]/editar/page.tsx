@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
-import { deckSchema } from "@/lib/schema";
+import { deckSchema, type Visibilidade } from "@/lib/schema";
 import { createClient } from "@/lib/supabase/server";
 import { EditorClient } from "./editor-client";
 
@@ -10,12 +10,12 @@ export default async function EditarDeckPage({ params }: { params: Promise<{ id:
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login?erro=sessao");
+  if (!user) redirect("/login");
 
   const { id } = await params;
   const { data: row } = await supabase
     .from("decks")
-    .select("id, titulo, marca, modo, slides")
+    .select("id, titulo, marca, modo, slides, visibilidade")
     .eq("id", id)
     .single();
   if (!row) notFound();
@@ -29,7 +29,7 @@ export default async function EditarDeckPage({ params }: { params: Promise<{ id:
   if (!parsed.success) notFound();
 
   return (
-    <AppShell email={user.email ?? ""} active="minhas">
+    <AppShell email={user.email ?? ""}>
       <div className="mb-8 flex flex-col gap-2">
         <Link
           href={`/deck/${row.id}`}
@@ -38,12 +38,13 @@ export default async function EditarDeckPage({ params }: { params: Promise<{ id:
           ← VOLTAR SEM SALVAR
         </Link>
         <h1 className="font-display text-4xl font-semibold tracking-tight">Editar apresentação</h1>
-        <p className="text-tinta3">
-          Ajuste os textos de cada slide — a estrutura e o padrão visual são fixos. O preview
-          atualiza em tempo real.
-        </p>
+        <p className="text-tinta3">Ajuste os textos — o preview atualiza na hora.</p>
       </div>
-      <EditorClient deckInicial={parsed.data} sourceId={row.id} />
+      <EditorClient
+        deckInicial={parsed.data}
+        sourceId={row.id}
+        visibilidadeInicial={row.visibilidade as Visibilidade}
+      />
     </AppShell>
   );
 }

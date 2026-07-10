@@ -13,8 +13,10 @@ export function Field({
 }) {
   return (
     <div className="flex gap-6 border-b border-fio pb-9">
+      {/* A coluna numerada é assinatura editorial do desktop — em 375px ela
+          come ~80px úteis do campo, então some no mobile. */}
       {numero ? (
-        <span className="w-8 shrink-0 pt-0.5 font-mono text-sm text-tinta4" aria-hidden>
+        <span className="hidden w-8 shrink-0 pt-0.5 font-mono text-sm text-tinta4 sm:block" aria-hidden>
           {numero}
         </span>
       ) : null}

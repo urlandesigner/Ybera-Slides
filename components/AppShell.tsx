@@ -1,75 +1,38 @@
 import Link from "next/link";
+import { Button } from "@/components/Button";
 import { LogoYbera } from "@/components/LogoYbera";
-import { ThemeToggle } from "@/components/ThemeToggle";
-
-function NavLink({ href, ativo, children }: { href: string; ativo: boolean; children: string }) {
-  return (
-    <Link
-      href={href}
-      aria-current={ativo ? "page" : undefined}
-      className={
-        ativo
-          ? "flex items-center gap-2 text-tinta"
-          : "flex items-center gap-2 text-tinta4 transition-colors hover:text-tinta2"
-      }
-    >
-      <span
-        aria-hidden
-        className={`h-1.5 w-1.5 rounded-full transition-colors ${ativo ? "bg-tinta" : "bg-transparent"}`}
-      />
-      {children}
-    </Link>
-  );
-}
+import { UserMenu } from "@/components/UserMenu";
 
 // Casca do app: cabeçalho operacional com navegação, e-mail e saída. Sem hero, sem sombras.
 export function AppShell({
   email,
-  active,
   children,
 }: {
   email: string;
-  active: "nova" | "repositorio" | "minhas";
   children: React.ReactNode;
 }) {
   return (
     <div className="min-h-screen">
       <header className="border-b border-fio">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-          <div className="flex items-center gap-10">
-            <Link href="/" className="flex items-center gap-3 text-tinta">
-              <LogoYbera className="h-7 w-auto" />
-              <span className="hidden font-mono text-[10px] tracking-[0.18em] text-tinta4 sm:inline">
-                GERADOR DE APRESENTAÇÕES
-              </span>
-            </Link>
-            <nav className="flex items-baseline gap-6 font-mono text-xs tracking-[0.12em]">
-              <NavLink href="/" ativo={active === "nova"}>
-                NOVA
-              </NavLink>
-              <NavLink href="/repositorio" ativo={active === "repositorio"}>
-                REPOSITÓRIO
-              </NavLink>
-              <NavLink href="/minhas" ativo={active === "minhas"}>
-                MINHAS
-              </NavLink>
-            </nav>
-          </div>
-          <div className="flex items-center gap-5">
-            <ThemeToggle />
-            <span className="hidden font-mono text-xs text-tinta4 md:inline">{email}</span>
-            <form action="/api/auth/logout" method="post">
-              <button
-                type="submit"
-                className="font-mono text-xs tracking-[0.12em] text-tinta4 transition-colors hover:text-tinta2"
-              >
-                SAIR
-              </button>
-            </form>
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-5 py-4 sm:gap-4 sm:px-6 sm:py-5">
+          <Link href="/" className="flex items-center text-tinta">
+            <LogoYbera className="h-6 w-auto sm:h-7" />
+          </Link>
+          <div className="flex items-center gap-3">
+            {/* Rótulo completo não cabe ao lado do logo + avatar em 375px.
+                Dois spans completos (não um texto+span dividindo o espaço):
+                o botão é inline-flex, então cada filho vira item de flex e o
+                espaço no início de um span filho é cortado pela regra de
+                whitespace de início de linha do CSS. */}
+            <Button href="/nova" variant="primary">
+              <span className="sm:hidden">+ NOVA</span>
+              <span className="hidden sm:inline">+ NOVA APRESENTAÇÃO</span>
+            </Button>
+            <UserMenu email={email} />
           </div>
         </div>
       </header>
-      <main className="surgir mx-auto max-w-5xl px-6 py-12">{children}</main>
+      <main className="surgir mx-auto max-w-5xl px-5 py-8 sm:px-6 sm:py-12">{children}</main>
     </div>
   );
 }
@@ -80,13 +43,15 @@ export function PageHeader({
   titulo,
   descricao,
 }: {
-  kicker: string;
+  kicker?: string;
   titulo: string;
   descricao?: string;
 }) {
   return (
     <div className="mb-12 flex flex-col gap-3">
-      <span className="font-mono text-xs tracking-[0.18em] text-tinta4">{kicker}</span>
+      {kicker ? (
+        <span className="font-mono text-xs tracking-[0.18em] text-tinta3">{kicker}</span>
+      ) : null}
       <h1 className="font-display text-4xl font-semibold tracking-tight">{titulo}</h1>
       {descricao ? <p className="max-w-xl text-tinta3">{descricao}</p> : null}
     </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ajustarHtmlParaEmbutir } from "@/lib/deck-embed";
 
 const MARCAS: Record<string, { rotulo: string; cor: string }> = {
   group: { rotulo: "GRUPO", cor: "var(--color-marca-group)" },
@@ -11,45 +12,60 @@ export function DeckListItem({
   id,
   titulo,
   marca,
+  html,
   autorEmail,
   createdAt,
   visibilidade,
+  mostrarAutor = true,
 }: {
   id: string;
   titulo: string;
   marca: string;
+  html: string;
   autorEmail: string;
   createdAt: string;
-  visibilidade?: string; // quando presente, mostra o selo (tela Minhas)
+  visibilidade?: string; // quando presente, mostra o selo (filtro Minhas)
+  mostrarAutor?: boolean; // false no filtro Minhas — autor é sempre o próprio usuário
 }) {
   const info = MARCAS[marca] ?? { rotulo: marca.toUpperCase(), cor: "var(--color-tinta4)" };
-  const dt = new Date(createdAt);
-  const data = dt.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit" });
-  const hora = dt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  const data = new Date(createdAt).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+  });
 
   return (
     <Link
       href={`/deck/${id}`}
-      className="-mx-4 flex items-baseline justify-between gap-6 rounded-lg border-b border-fio px-4 py-5 transition-colors hover:bg-painel"
+      className="card-sombra flex flex-col overflow-hidden rounded-xl border border-fio18 bg-painel hover:border-fio25"
     >
-      <div className="flex min-w-0 items-baseline gap-4">
-        <span className="flex shrink-0 items-center gap-2 rounded-full border border-fio18 px-3 py-1 font-mono text-[11px] tracking-[0.12em] text-tinta3">
-          <span aria-hidden className="h-1.5 w-1.5 rounded-full" style={{ background: info.cor }} />
-          {info.rotulo}
-        </span>
-        <span className="truncate font-display text-base text-tinta">{titulo}</span>
-        {visibilidade === "restrita" ? (
-          <span className="flex shrink-0 items-center gap-2 rounded-full border border-fio18 px-3 py-1 font-mono text-[11px] tracking-[0.12em] text-tinta4">
-            <span aria-hidden className="h-1.5 w-1.5 rounded-full border border-fio25" />
-            RESTRITA
+      {/* A capa é sempre o primeiro slide — o próprio HTML do deck se auto-escala pro tamanho do iframe. */}
+      <iframe
+        srcDoc={ajustarHtmlParaEmbutir(html, { esconderContador: true })}
+        sandbox="allow-scripts"
+        tabIndex={-1}
+        aria-hidden="true"
+        title={`Capa de ${titulo}`}
+        className="aspect-video w-full border-b border-fio18 bg-fundo pointer-events-none"
+      />
+      <div className="flex flex-col gap-2 p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="flex shrink-0 items-center gap-2 rounded-full border border-fio18 px-3 py-1 font-mono text-[11px] tracking-[0.12em] text-tinta3">
+            <span aria-hidden className="h-1.5 w-1.5 rounded-full" style={{ background: info.cor }} />
+            {info.rotulo}
           </span>
-        ) : null}
-      </div>
-      <div className="flex shrink-0 items-baseline gap-6 font-mono text-xs text-tinta4">
-        <span className="hidden sm:inline">{autorEmail}</span>
-        <span>
-          {data} · {hora}
-        </span>
+          {visibilidade === "restrita" ? (
+            <span className="flex shrink-0 items-center gap-2 rounded-full border border-fio18 px-3 py-1 font-mono text-[11px] tracking-[0.12em] text-tinta4">
+              <span aria-hidden className="h-1.5 w-1.5 rounded-full border border-fio25" />
+              RESTRITA
+            </span>
+          ) : null}
+        </div>
+        <span className="truncate font-display text-base text-tinta">{titulo}</span>
+        <div className="flex items-center gap-3 font-mono text-xs text-tinta3">
+          {mostrarAutor ? <span className="truncate">{autorEmail}</span> : null}
+          <span className="shrink-0">{data}</span>
+        </div>
       </div>
     </Link>
   );

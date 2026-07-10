@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 // token_hash (template com {{ .TokenHash }}) e code (fluxo PKCE padrão).
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const tokenHash = url.searchParams.get("token_hash");
+  const tokenHash = url.searchParams.get("token_hash") ?? url.searchParams.get("token");
   const type = url.searchParams.get("type") as EmailOtpType | null;
   const code = url.searchParams.get("code");
 

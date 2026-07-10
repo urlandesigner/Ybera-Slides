@@ -1,19 +1,44 @@
 @import "tailwindcss";
 
-/* Tokens do padrão Ybera aplicados à UI do app (fundo, tinta, hairlines, acentos de marca) */
+/* Tokens da UI do app (fundo, tinta, hairlines, acentos de marca) mapeados pra
+   nova paleta neutra (grayscale). A arquitetura de tokens é a do app — os nomes
+   shadcn do tema recebido (background/foreground/card/border/muted-foreground…)
+   foram traduzidos pros nomes que os componentes já usam, então nada quebra.
+   Tema padrão = dark (valores dark do tema); light em :root[data-tema="light"].
+   A paleta dá 2 níveis de texto (foreground + muted-foreground); tinta3 é o
+   "muted" (mais usado) e tinta2/tinta4 preenchem os tons intermediário/mais fraco. */
 @theme {
-  --color-fundo: rgb(5, 5, 5);
-  --color-painel: rgb(12, 12, 13);
-  --color-tinta: rgb(250, 249, 252);
-  --color-tinta2: rgb(224, 223, 226);
-  --color-tinta3: rgb(176, 175, 178);
-  --color-tinta4: rgb(108, 107, 110);
-  --color-fio: rgba(250, 249, 252, 0.08);
-  --color-fio18: rgba(250, 249, 252, 0.18);
-  --color-fio25: rgba(250, 249, 252, 0.25);
-  --color-erro: rgb(220, 76, 100);
+  /* Rampa neutra canônica (black-50 → black-950). Fonte de verdade dos cinzas;
+     disponível também como utilities diretas (bg-black-900, text-black-500…). */
+  --color-black-50: #fafafa;
+  --color-black-100: #f5f5f5;
+  --color-black-200: #e6e6e6;
+  --color-black-300: #d6d6d6;
+  --color-black-400: #a5a5a5;
+  --color-black-500: #767676;
+  --color-black-600: #575757;
+  --color-black-700: #434343;
+  --color-black-800: #292929;
+  --color-black-900: #1a1a1a;
+  --color-black-950: #000000;
 
-  /* Acentos por marca — mesmos valores do template de referência (data-tom dark) */
+  /* Tokens semânticos do app apontando pra rampa (tema padrão = dark).
+     Superfícies 900/800; texto 100→500 (um degrau mais claro que o mapa
+     "óbvio" — o degrau de baixo lavava labels a 3.8:1 e hints a 2.4:1; com o
+     shift: labels 7.1:1, hints 3.8:1). Hairlines em alpha: a rampa não tem
+     degraus suaves o bastante acima da superfície escura. */
+  --color-fundo: var(--color-black-900); /* #1a1a1a */
+  --color-painel: var(--color-black-800); /* #292929 */
+  --color-tinta: var(--color-black-100); /* #f5f5f5 */
+  --color-tinta2: var(--color-black-300); /* #d6d6d6 */
+  --color-tinta3: var(--color-black-400); /* #a5a5a5 — labels, botões */
+  --color-tinta4: var(--color-black-500); /* #767676 — hints, placeholders */
+  --color-fio: rgba(255, 255, 255, 0.08);
+  --color-fio18: rgba(255, 255, 255, 0.18);
+  --color-fio25: rgba(255, 255, 255, 0.3);
+  --color-erro: #e06666; /* destructive (dark) — fora da rampa neutra */
+
+  /* Acentos por marca — identidade de produto, fora do escopo da paleta neutra */
   --color-marca-group: rgb(201, 200, 204);
   --color-marca-ybera: rgb(176, 175, 178);
   --color-marca-club: rgb(199, 15, 67);
@@ -28,29 +53,43 @@
   --font-mono: var(--font-dm-mono), monospace;
 }
 
-/* ---- Tema em runtime: dark é o padrão; light espelha o data-tom="light"
-       do template de referência. O toggle grava data-tema no <html>. ---- */
+/* ---- Tema em runtime: dark é o padrão; light usa os valores :root do tema.
+       O toggle grava data-tema no <html>. ---- */
 :root {
   color-scheme: dark;
-  --grad-topo: rgb(10, 10, 11);
-  --selecao: rgba(250, 249, 252, 0.2);
+  --grad-topo: var(--color-black-800); /* #292929 — vinheta um tom acima do fundo */
+  --selecao: rgba(230, 230, 230, 0.2);
+
+  /* Sombra suave de card (float). No dark, superfície escura sobre fundo escuro:
+     sombras precisam de preto mais opaco pra registrar profundidade. */
+  --sombra-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -6px rgba(0, 0, 0, 0.5);
+  --sombra-card-hover: 0 2px 4px rgba(0, 0, 0, 0.35), 0 16px 40px -8px rgba(0, 0, 0, 0.62);
 }
 
 :root[data-tema="light"] {
   color-scheme: light;
-  --grad-topo: rgb(255, 255, 255);
-  --selecao: rgba(5, 5, 5, 0.12);
+  --grad-topo: var(--color-black-50); /* #fafafa — vinheta um tom acima do fundo */
+  --selecao: rgba(41, 41, 41, 0.12);
 
-  --color-fundo: rgb(250, 249, 252);
-  --color-painel: rgb(243, 242, 246);
-  --color-tinta: rgb(5, 5, 5);
-  --color-tinta2: rgb(48, 48, 50);
-  --color-tinta3: rgb(108, 107, 110);
-  --color-tinta4: rgb(148, 147, 150);
-  --color-fio: rgba(5, 5, 5, 0.07);
-  --color-fio18: rgba(5, 5, 5, 0.2);
-  --color-fio25: rgba(5, 5, 5, 0.28);
-  --color-erro: rgb(186, 44, 70);
+  /* Superfícies claras (100/50), texto escuro (900→500), hairlines sólidos da
+     rampa (300/400/500). Cada papel fica um degrau mais escuro do que o mapa
+     "óbvio" pediria: sobre superfície clara, o degrau de cima lavava o texto
+     (tinta4 dava 2.3:1 e bordas 1.3:1 de contraste — ilegível). Com o shift:
+     labels 6.6:1, hints 4.2:1, bordas 2.3:1. */
+  --color-fundo: var(--color-black-100); /* #f5f5f5 */
+  --color-painel: var(--color-black-50); /* #fafafa */
+  --color-tinta: var(--color-black-900); /* #1a1a1a */
+  --color-tinta2: var(--color-black-700); /* #434343 */
+  --color-tinta3: var(--color-black-600); /* #575757 — labels, botões */
+  --color-tinta4: var(--color-black-500); /* #767676 — hints, placeholders */
+  --color-fio: var(--color-black-300); /* #d6d6d6 — hairline mais suave */
+  --color-fio18: var(--color-black-400); /* #a5a5a5 — border */
+  --color-fio25: var(--color-black-500); /* #767676 — hairline mais forte */
+  --color-erro: #cc3333; /* destructive (light) — fora da rampa neutra */
+
+  /* Sombra suave de card (float), estilo da referência: difusa, y baixo, opacidade baixa */
+  --sombra-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px -6px rgba(0, 0, 0, 0.1);
+  --sombra-card-hover: 0 2px 4px rgba(0, 0, 0, 0.05), 0 16px 40px -8px rgba(0, 0, 0, 0.14);
 
   /* Acentos por marca no light (mesmos valores do template) */
   --color-marca-group: rgb(90, 89, 92);
@@ -73,6 +112,27 @@ body {
   outline: 1px solid var(--color-fio25);
   outline-offset: 3px;
   border-radius: 2px;
+}
+
+/* O preflight do Tailwind v4 deixa <button> com cursor default — botões
+   clicáveis devem se comportar como links (pointer), exceto desabilitados. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* Card flutuante: sombra suave que sobe levemente no hover */
+.card-sombra {
+  box-shadow: var(--sombra-card);
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+.card-sombra:hover {
+  box-shadow: var(--sombra-card-hover);
 }
 
 /* ---- Movimento: uma entrada orquestrada por página, nada espalhado ---- */

@@ -5,7 +5,6 @@ import { createClient } from "@/lib/supabase/server";
 import { LoginForm } from "./login-form";
 
 const AVISOS: Record<string, string> = {
-  sessao: "Sua sessão expirou. Entre de novo para continuar.",
   link: "Este link de acesso expirou ou já foi usado. Peça um novo.",
 };
 

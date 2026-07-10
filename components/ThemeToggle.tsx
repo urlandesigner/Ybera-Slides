@@ -27,7 +27,7 @@ export function ThemeToggle() {
     <div
       role="radiogroup"
       aria-label="Tema da interface"
-      className="flex items-center rounded-full border border-fio18"
+      className="flex w-fit items-center rounded-full border border-fio18"
     >
       {(["dark", "light"] as const).map((opcao) => (
         <button

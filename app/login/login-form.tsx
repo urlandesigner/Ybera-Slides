@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/Button";
 import { inputClass } from "@/components/Field";
 
 type Status = "inicial" | "enviando" | "enviado";
@@ -75,13 +76,9 @@ export function LoginForm({ avisoInicial }: { avisoInicial: string | null }) {
           {erro}
         </p>
       ) : null}
-      <button
-        type="submit"
-        disabled={status === "enviando" || !email}
-        className="rounded-full border border-fio25 bg-tinta px-6 py-3 font-mono text-xs tracking-[0.12em] text-fundo transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-      >
+      <Button type="submit" variant="primary" size="lg" disabled={status === "enviando" || !email}>
         {status === "enviando" ? "ENVIANDO…" : "RECEBER LINK DE ACESSO"}
-      </button>
+      </Button>
     </form>
   );
 }

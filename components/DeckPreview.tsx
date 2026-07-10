@@ -1,13 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Button } from "@/components/Button";
+import { ajustarHtmlParaEmbutir } from "@/lib/deck-embed";
 
 function slugify(titulo: string): string {
   return (
     titulo
       .toLowerCase()
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[̀-ͯ]/g, "")
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "") || "apresentacao"
   );
@@ -15,31 +17,80 @@ function slugify(titulo: string): string {
 
 // Preview do deck em iframe isolado + ações. O HTML é auto-contido;
 // allow-scripts é necessário para o visualizador (setas, escala, logos).
-// slideAtivo (opcional) sincroniza o iframe com um slide específico — o HTML
-// precisa conter o ouvinte de postMessage (o editor injeta isso no preview).
+//
+// navegavel: troca o contador interno do slide pela navegação externa
+// (← N/total → centralizada abaixo do preview), via ponte de postMessage.
+// slideAtivo + onSlideChange (opcionais): modo controlado — o pai é dono do
+// índice (o editor sincroniza a lista de slides com as setas daqui).
+// A engrenagem de configurações não aparece em nenhum embed (só na apresentação
+// aberta via VISUALIZAR ou no arquivo baixado). VISUALIZAR/DOWNLOAD sempre usam
+// o HTML original (`exportavel`), nunca a versão ajustada pro embed.
 export function DeckPreview({
   html,
   htmlExport,
   titulo,
   actions,
   slideAtivo,
+  onSlideChange,
+  navegavel = false,
 }: {
   html: string;
   htmlExport?: string; // HTML puro para baixar/visualizar (default: o mesmo do preview)
   titulo: string;
   actions?: React.ReactNode;
   slideAtivo?: number;
+  onSlideChange?: (indice: number) => void;
+  navegavel?: boolean;
 }) {
   const exportavel = htmlExport ?? html;
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [idxInterno, setIdxInterno] = useState(0);
+  const [total, setTotal] = useState(1);
 
-  const irParaSlide = useCallback(() => {
-    if (slideAtivo == null) return;
-    iframeRef.current?.contentWindow?.postMessage({ tipo: "ir-para-slide", indice: slideAtivo }, "*");
-  }, [slideAtivo]);
+  const controlado = slideAtivo != null;
+  const indice = controlado ? slideAtivo : idxInterno;
 
-  // Ao trocar a seleção — e também quando o srcdoc recarrega após uma edição
-  useEffect(irParaSlide, [irParaSlide, html]);
+  const postar = useCallback((n: number) => {
+    iframeRef.current?.contentWindow?.postMessage({ tipo: "ir-para-slide", indice: n }, "*");
+  }, []);
+
+  // Sincroniza o iframe quando o índice muda — e quando o srcdoc recarrega
+  // após uma edição (o novo documento nasce no slide 1).
+  useEffect(() => {
+    postar(indice);
+  }, [postar, indice, html]);
+
+  // Conteúdo novo (outra apresentação) reinicia a navegação interna
+  useEffect(() => {
+    setIdxInterno(0);
+  }, [html]);
+
+  // A ponte injetada no iframe reporta quantos slides existem
+  useEffect(() => {
+    if (!navegavel) return;
+    function aoReceber(e: MessageEvent) {
+      if (e.source !== iframeRef.current?.contentWindow) return;
+      if (e.data?.tipo === "deck-total" && typeof e.data.total === "number") {
+        setTotal(Math.max(1, e.data.total));
+      }
+    }
+    window.addEventListener("message", aoReceber);
+    return () => window.removeEventListener("message", aoReceber);
+  }, [navegavel]);
+
+  const irPara = useCallback(
+    (n: number) => {
+      const alvo = Math.min(Math.max(n, 0), Math.max(total - 1, 0));
+      if (controlado) {
+        onSlideChange?.(alvo);
+      } else {
+        setIdxInterno(alvo);
+      }
+      postar(alvo);
+    },
+    [controlado, onSlideChange, postar, total]
+  );
+
   const baixar = useCallback(() => {
     const blob = new Blob([exportavel], { type: "text/html;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -59,38 +110,51 @@ export function DeckPreview({
   }, [exportavel]);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-baseline justify-between gap-4">
+    <div className="flex flex-col gap-3">
+      {/* flex-wrap: no mobile os 3 botões descem pra linha de baixo do título */}
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-3">
         <h2 className="font-display text-xl">{titulo}</h2>
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={visualizar}
-            className="rounded-full border border-fio18 px-5 py-2 font-mono text-xs tracking-[0.12em] text-tinta3 transition-colors hover:border-fio25 hover:text-tinta2"
-          >
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <Button type="button" onClick={visualizar}>
             VISUALIZAR
-          </button>
-          <button
-            type="button"
-            onClick={baixar}
-            className="rounded-full border border-fio25 bg-tinta px-5 py-2 font-mono text-xs tracking-[0.12em] text-fundo transition-opacity hover:opacity-90"
-          >
-            BAIXAR HTML
-          </button>
+          </Button>
           {actions}
+          <Button type="button" onClick={baixar}>
+            DOWNLOAD
+          </Button>
         </div>
       </div>
       <iframe
         ref={iframeRef}
         sandbox="allow-scripts"
-        srcDoc={html}
-        onLoad={irParaSlide}
+        srcDoc={ajustarHtmlParaEmbutir(html, navegavel ? { esconderContador: true, comPonte: true } : {})}
+        onLoad={() => postar(indice)}
         title={`Preview: ${titulo}`}
-        className="aspect-video w-full rounded-lg border border-fio18 bg-fundo"
+        className="aspect-video w-full rounded-xl border border-fio18 bg-fundo [box-shadow:var(--sombra-card)]"
       />
-      <p className="font-mono text-xs text-tinta4">
-        NAVEGUE COM ← → OU CLIQUE · EM VISUALIZAR, F ENTRA EM TELA CHEIA
-      </p>
+      {navegavel ? (
+        <div className="flex items-center justify-center gap-4 pt-1">
+          <Button
+            type="button"
+            onClick={() => irPara(indice - 1)}
+            disabled={indice <= 0}
+            aria-label="Slide anterior"
+          >
+            ←
+          </Button>
+          <span className="min-w-16 text-center font-mono text-xs tracking-[0.12em] text-tinta3 tabular-nums">
+            {indice + 1} / {total}
+          </span>
+          <Button
+            type="button"
+            onClick={() => irPara(indice + 1)}
+            disabled={indice >= total - 1}
+            aria-label="Próximo slide"
+          >
+            →
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }

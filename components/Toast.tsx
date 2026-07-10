@@ -20,7 +20,7 @@ export function Toast({
   return (
     <div
       role="status"
-      className={`surgir fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-lg border bg-painel px-5 py-3 text-sm ${
+      className={`surgir fixed bottom-6 left-1/2 z-50 flex w-max max-w-[calc(100vw-2.5rem)] -translate-x-1/2 items-center gap-3 rounded-lg border bg-painel px-5 py-3 text-sm [box-shadow:var(--sombra-card)] ${
         tone === "erro" ? "border-erro/50 text-tinta" : "border-fio25 text-tinta2"
       }`}
     >

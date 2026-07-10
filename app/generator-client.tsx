@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { BrandPicker } from "@/components/BrandPicker";
-import { DeckPreview } from "@/components/DeckPreview";
+import { PageHeader } from "@/components/AppShell";
+import { Button } from "@/components/Button";
 import { Field, inputClass } from "@/components/Field";
 import { Toast } from "@/components/Toast";
 import type { Marca, Modo, Visibilidade } from "@/lib/schema";
 
-type Fase = "formulario" | "gerando" | "pronto";
-
-type Resultado = { id: string; titulo: string; html: string };
+type Fase = "formulario" | "gerando";
 
 const MARCAS: { value: Marca; label: string; cor: string }[] = [
   { value: "group", label: "GRUPO", cor: "var(--color-marca-group)" },
@@ -23,10 +24,11 @@ const MODOS: { value: Modo; label: string }[] = [
   { value: "light", label: "LIGHT" },
 ];
 
-const TAMANHOS: { value: 10 | 14 | 18; label: string }[] = [
-  { value: 10, label: "~10 SLIDES" },
-  { value: 14, label: "~14 SLIDES" },
-  { value: 18, label: "~18 SLIDES" },
+const TAMANHOS: { value: 5 | 10 | 15 | 20; label: string }[] = [
+  { value: 5, label: "5" },
+  { value: 10, label: "10" },
+  { value: 15, label: "15" },
+  { value: 20, label: "20+" },
 ];
 
 const VISIBILIDADES: { value: Visibilidade; label: string }[] = [
@@ -34,21 +36,22 @@ const VISIBILIDADES: { value: Visibilidade; label: string }[] = [
   { value: "restrita", label: "RESTRITA" },
 ];
 
-const MINIMO_CONTEUDO = 40;
+// Teto generoso pra não estourar o prompt da IA com um arquivo gigante.
+const MAX_ARQUIVO_CARACTERES = 50_000;
 
 export function GeneratorClient() {
+  const router = useRouter();
   const [marca, setMarca] = useState<Marca>("group");
   const [modo, setModo] = useState<Modo>("dark");
   const [assunto, setAssunto] = useState("");
-  const [publico, setPublico] = useState("");
-  const [numSlides, setNumSlides] = useState<10 | 14 | 18>(14);
+  const [numSlides, setNumSlides] = useState<5 | 10 | 15 | 20>(10);
   const [conteudo, setConteudo] = useState("");
   const [visibilidade, setVisibilidade] = useState<Visibilidade>("publica");
 
   const [fase, setFase] = useState<Fase>("formulario");
-  const [resultado, setResultado] = useState<Resultado | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [segundos, setSegundos] = useState(0);
+  const arquivoRef = useRef<HTMLInputElement>(null);
 
   // Cronômetro honesto enquanto gera
   useEffect(() => {
@@ -63,11 +66,35 @@ export function GeneratorClient() {
   // Motivo visível para o CTA desabilitado
   const motivo = !assunto.trim()
     ? "Preencha o assunto"
-    : !publico.trim()
-      ? "Preencha o público"
-      : tamanhoConteudo < MINIMO_CONTEUDO
-        ? "Cole o conteúdo a cobrir (pelo menos algumas linhas)"
-        : null;
+    : !conteudo.trim()
+      ? "Cole o conteúdo a cobrir"
+      : null;
+
+  // Lê um .txt/.md selecionado e joga o texto no campo de conteúdo — soma ao
+  // que já tiver escrito em vez de apagar, pra não perder nada sem querer.
+  function handleArquivo(e: React.ChangeEvent<HTMLInputElement>) {
+    const arquivo = e.target.files?.[0];
+    e.target.value = ""; // permite escolher o mesmo arquivo de novo depois
+    if (!arquivo) return;
+
+    const leitor = new FileReader();
+    leitor.onload = () => {
+      const texto = String(leitor.result ?? "").trim();
+      if (!texto) {
+        setErro("O arquivo está vazio.");
+        return;
+      }
+      if (texto.length > MAX_ARQUIVO_CARACTERES) {
+        setErro(
+          `Arquivo muito grande (${texto.length.toLocaleString("pt-BR")} caracteres, máx. ${MAX_ARQUIVO_CARACTERES.toLocaleString("pt-BR")}). Cole só os trechos essenciais.`
+        );
+        return;
+      }
+      setConteudo((atual) => (atual.trim() ? `${atual.trim()}\n\n${texto}` : texto));
+    };
+    leitor.onerror = () => setErro("Não foi possível ler o arquivo. Tente novamente.");
+    leitor.readAsText(arquivo);
+  }
 
   async function gerar() {
     if (motivo) return;
@@ -77,16 +104,22 @@ export function GeneratorClient() {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ marca, modo, assunto, publico, numSlides, conteudo, visibilidade }),
+        body: JSON.stringify({
+          marca,
+          modo,
+          assunto,
+          numSlides,
+          conteudo,
+          visibilidade,
+        }),
       });
       const body = await res.json().catch(() => null);
-      if (res.ok && body?.html) {
-        setResultado(body as Resultado);
-        setFase("pronto");
+      if (res.ok && body?.id) {
+        router.push(`/deck/${body.id}`);
         return;
       }
       if (res.status === 401) {
-        window.location.href = "/login?erro=sessao";
+        window.location.href = "/login";
         return;
       }
       setErro(body?.erro ?? "Erro ao gerar a apresentação. Seu briefing foi preservado — tente de novo.");
@@ -97,38 +130,15 @@ export function GeneratorClient() {
     }
   }
 
-  if (fase === "pronto" && resultado) {
-    return (
-      <div className="surgir">
-        <DeckPreview
-          html={resultado.html}
-          titulo={resultado.titulo}
-          actions={
-            <>
-              <a
-                key="editar"
-                href={`/deck/${resultado.id}/editar`}
-                className="rounded-full border border-fio18 px-5 py-2 font-mono text-xs tracking-[0.12em] text-tinta3 transition-colors hover:border-fio25 hover:text-tinta2"
-              >
-                EDITAR
-              </a>
-              <button
-                type="button"
-                onClick={() => setFase("formulario")}
-                className="rounded-full border border-fio18 px-5 py-2 font-mono text-xs tracking-[0.12em] text-tinta3 transition-colors hover:border-fio25 hover:text-tinta2"
-              >
-                NOVA VERSÃO
-              </button>
-            </>
-          }
-        />
-      </div>
-    );
-  }
-
   if (fase === "gerando") {
     return (
       <div className="surgir flex max-w-2xl flex-col gap-8 py-6">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.12em] text-tinta4 transition-colors hover:text-tinta3"
+        >
+          ← APRESENTAÇÕES
+        </Link>
         <div className="flex items-center gap-3">
           <span
             aria-hidden
@@ -168,98 +178,113 @@ export function GeneratorClient() {
   }
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        gerar();
-      }}
-      className="flex max-w-2xl flex-col gap-9"
-    >
-      <Field numero="01" label="MARCA">
-        <BrandPicker name="Marca" options={MARCAS} value={marca} onChange={setMarca} />
-      </Field>
-
-      <Field numero="02" label="MODO">
-        <BrandPicker name="Modo" options={MODOS} value={modo} onChange={setModo} />
-      </Field>
-
-      <Field numero="03" label="ASSUNTO" hint="O tema central da apresentação.">
-        <input
-          value={assunto}
-          onChange={(e) => setAssunto(e.target.value)}
-          placeholder="Lançamento da linha PRO no varejo"
-          className={inputClass}
-        />
-      </Field>
-
-      <Field numero="04" label="PÚBLICO" hint="Para quem é: diretoria, franqueados, time comercial…">
-        <input
-          value={publico}
-          onChange={(e) => setPublico(e.target.value)}
-          placeholder="Diretoria e líderes de área"
-          className={inputClass}
-        />
-      </Field>
-
-      <Field numero="05" label="NÚMERO DE SLIDES">
-        <BrandPicker
-          name="Número de slides"
-          options={TAMANHOS}
-          value={numSlides}
-          onChange={setNumSlides}
-        />
-      </Field>
-
-      <Field
-        numero="06"
-        label="CONTEÚDO A COBRIR"
-        hint="Cole os pontos, dados e fatos — nada será inventado. Sem números no briefing, não haverá slide de métricas."
+    <div className="flex max-w-2xl flex-col gap-9">
+      <Link
+        href="/"
+        className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.12em] text-tinta4 transition-colors hover:text-tinta3"
       >
-        <textarea
-          value={conteudo}
-          onChange={(e) => setConteudo(e.target.value)}
-          rows={12}
-          placeholder={"- Contexto do projeto\n- Dados e resultados (com números reais)\n- Próximos passos\n- Citações reais, se houver"}
-          className={`${inputClass} resize-y font-mono text-sm leading-relaxed`}
-        />
-        <p
-          className={`text-right font-mono text-[11px] tracking-[0.1em] ${
-            tamanhoConteudo === 0
-              ? "text-tinta4"
-              : tamanhoConteudo < MINIMO_CONTEUDO
-                ? "text-erro"
-                : "text-tinta4"
-          }`}
-        >
-          {tamanhoConteudo} CARACTERES{tamanhoConteudo < MINIMO_CONTEUDO ? ` · MÍNIMO ${MINIMO_CONTEUDO}` : ""}
-        </p>
-      </Field>
-
-      <Field
-        numero="07"
-        label="VISIBILIDADE"
-        hint="Pública: entra no repositório da equipe. Restrita: só você vê, na tela Minhas. Dá para mudar depois."
+        ← APRESENTAÇÕES
+      </Link>
+      <PageHeader
+        titulo="Nova apresentação"
+        descricao="Preencha o briefing e receba um HTML no padrão visual Ybera, pronto para apresentar."
+      />
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          gerar();
+        }}
+        className="flex flex-col gap-9"
       >
-        <BrandPicker
-          name="Visibilidade"
-          options={VISIBILIDADES}
-          value={visibilidade}
-          onChange={setVisibilidade}
-        />
-      </Field>
+        <Field numero="01" label="MARCA">
+          <BrandPicker name="Marca" options={MARCAS} value={marca} onChange={setMarca} />
+        </Field>
 
-      <div className="flex items-center gap-5 pl-14">
-        <button
-          type="submit"
-          disabled={Boolean(motivo)}
-          className="rounded-full border border-fio25 bg-tinta px-8 py-3 font-mono text-xs tracking-[0.12em] text-fundo transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+        <Field numero="02" label="MODO">
+          <BrandPicker name="Modo" options={MODOS} value={modo} onChange={setModo} />
+        </Field>
+
+        <Field numero="03" label="ASSUNTO" hint="O tema central da apresentação.">
+          <input
+            value={assunto}
+            onChange={(e) => setAssunto(e.target.value)}
+            placeholder="Lançamento da linha PRO no varejo"
+            className={inputClass}
+          />
+        </Field>
+
+        <Field
+          numero="04"
+          label="NÚMERO DE SLIDES"
+          hint="Aproximadamente — a IA ajusta o total final conforme o conteúdo."
         >
-          GERAR APRESENTAÇÃO
-        </button>
-        {motivo ? <span className="text-sm text-tinta4">{motivo}</span> : null}
-      </div>
+          <BrandPicker
+            name="Número de slides"
+            options={TAMANHOS}
+            value={numSlides}
+            onChange={setNumSlides}
+          />
+        </Field>
 
-      {erro ? <Toast message={erro} onClose={() => setErro(null)} /> : null}
-    </form>
+        <Field
+          numero="05"
+          label="CONTEÚDO"
+          hint="Obrigatório. Cole os pontos, dados e fatos — nada será inventado. Sem números no briefing, não haverá slide de métricas."
+        >
+          <div className="flex justify-end">
+            <input
+              ref={arquivoRef}
+              type="file"
+              accept=".txt,.md,text/plain,text/markdown"
+              className="hidden"
+              onChange={handleArquivo}
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => arquivoRef.current?.click()}
+            >
+              IMPORTAR .TXT
+            </Button>
+          </div>
+          <textarea
+            value={conteudo}
+            onChange={(e) => setConteudo(e.target.value)}
+            rows={12}
+            placeholder={"- Contexto do projeto\n- Dados e resultados (com números reais)\n- Próximos passos\n- Citações reais, se houver"}
+            className={`${inputClass} resize-y font-mono text-sm leading-relaxed`}
+          />
+          {tamanhoConteudo > 0 ? (
+            <p className="text-right font-mono text-[11px] tracking-[0.1em] text-tinta4">
+              {tamanhoConteudo} CARACTERES
+            </p>
+          ) : null}
+        </Field>
+
+        <Field
+          numero="06"
+          label="VISIBILIDADE"
+          hint="Pública: aparece pra toda a equipe. Restrita: só você vê. Dá para mudar depois."
+        >
+          <BrandPicker
+            name="Visibilidade"
+            options={VISIBILIDADES}
+            value={visibilidade}
+            onChange={setVisibilidade}
+          />
+        </Field>
+
+        {/* pl acompanha a coluna numerada dos campos — que só existe no desktop */}
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-3 sm:pl-14">
+          <Button type="submit" variant="primary" size="lg" disabled={Boolean(motivo)}>
+            GERAR APRESENTAÇÃO
+          </Button>
+          {motivo ? <span className="text-sm text-tinta4">{motivo}</span> : null}
+        </div>
+
+        {erro ? <Toast message={erro} onClose={() => setErro(null)} /> : null}
+      </form>
+    </div>
   );
 }

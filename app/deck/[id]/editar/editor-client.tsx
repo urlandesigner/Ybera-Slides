@@ -3,11 +3,13 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BrandPicker } from "@/components/BrandPicker";
+import { Button } from "@/components/Button";
 import { DeckPreview } from "@/components/DeckPreview";
 import { Toast } from "@/components/Toast";
 import { inputClass } from "@/components/Field";
+import { VisibilityToggle } from "@/components/VisibilityToggle";
 import { renderDeck } from "@/lib/renderer";
-import type { Deck, Marca, Modo, Slide } from "@/lib/schema";
+import type { Deck, Marca, Modo, Slide, Visibilidade } from "@/lib/schema";
 
 // Campos que aceitam "vazio = ausente" no contrato
 const CAMPOS_ANULAVEIS = new Set(["apoio", "contexto"]);
@@ -127,7 +129,15 @@ function CamposDoSlide({ slide, onChange }: { slide: Slide; onChange: (s: Slide)
   return <div className="flex flex-col gap-4">{campos}</div>;
 }
 
-export function EditorClient({ deckInicial, sourceId }: { deckInicial: Deck; sourceId: string }) {
+export function EditorClient({
+  deckInicial,
+  sourceId,
+  visibilidadeInicial,
+}: {
+  deckInicial: Deck;
+  sourceId: string;
+  visibilidadeInicial: Visibilidade;
+}) {
   const router = useRouter();
   const [deck, setDeck] = useState(deckInicial);
   const [idx, setIdx] = useState(0);
@@ -135,17 +145,6 @@ export function EditorClient({ deckInicial, sourceId }: { deckInicial: Deck; sou
   const [toast, setToast] = useState<string | null>(null);
 
   const html = useMemo(() => renderDeck(deck), [deck]);
-
-  // Só no preview do editor: ouvinte que deixa o painel controlar qual slide
-  // o visualizador exibe (o HTML salvo/baixado é re-renderizado sem isto).
-  const htmlPreview = useMemo(
-    () =>
-      html.replace(
-        "</body>",
-        `<script>window.addEventListener("message",function(e){if(e.data&&e.data.tipo==="ir-para-slide"&&typeof mostrar==="function"){mostrar(e.data.indice);}});</script>\n</body>`
-      ),
-    [html]
-  );
 
   const slide = deck.slides[idx];
 
@@ -167,7 +166,7 @@ export function EditorClient({ deckInicial, sourceId }: { deckInicial: Deck; sou
         return;
       }
       if (res.status === 401) {
-        window.location.href = "/login?erro=sessao";
+        window.location.href = "/login";
         return;
       }
       setToast(body?.erro ?? "Não foi possível salvar a nova versão");
@@ -181,20 +180,30 @@ export function EditorClient({ deckInicial, sourceId }: { deckInicial: Deck; sou
   return (
     <div className="grid gap-10 lg:grid-cols-[400px_1fr]">
       <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-4 border-b border-fio pb-8">
-          <label className="font-mono text-xs tracking-[0.14em] text-tinta3">TÍTULO DA APRESENTAÇÃO</label>
-          <input
-            value={deck.titulo}
-            onChange={(e) => setDeck((d) => ({ ...d, titulo: e.target.value }))}
-            className={inputClass}
-          />
-          <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+        {/* Cada etapa (título, marca, modo, visibilidade) com rótulo próprio
+            e respiro entre grupos — mesmo padrão do formulário de geração. */}
+        <div className="flex flex-col gap-7 border-b border-fio pb-8">
+          <div className="flex flex-col gap-3">
+            <label className="font-mono text-xs tracking-[0.14em] text-tinta3">
+              TÍTULO DA APRESENTAÇÃO
+            </label>
+            <input
+              value={deck.titulo}
+              onChange={(e) => setDeck((d) => ({ ...d, titulo: e.target.value }))}
+              className={inputClass}
+            />
+          </div>
+          <div className="flex flex-col gap-3">
+            <span className="font-mono text-xs tracking-[0.14em] text-tinta3">MARCA</span>
             <BrandPicker
               name="Marca"
               options={MARCAS}
               value={deck.marca}
               onChange={(marca) => setDeck((d) => ({ ...d, marca }))}
             />
+          </div>
+          <div className="flex flex-col gap-3">
+            <span className="font-mono text-xs tracking-[0.14em] text-tinta3">MODO</span>
             <BrandPicker
               name="Modo"
               options={MODOS}
@@ -202,6 +211,7 @@ export function EditorClient({ deckInicial, sourceId }: { deckInicial: Deck; sou
               onChange={(modo) => setDeck((d) => ({ ...d, modo }))}
             />
           </div>
+          <VisibilityToggle deckId={sourceId} inicial={visibilidadeInicial} />
         </div>
 
         <div className="flex flex-col gap-3">
@@ -231,22 +241,24 @@ export function EditorClient({ deckInicial, sourceId }: { deckInicial: Deck; sou
           <CamposDoSlide slide={slide} onChange={atualizaSlide} />
         </div>
 
-        <button
-          type="button"
-          onClick={salvar}
-          disabled={salvando}
-          className="rounded-full border border-fio25 bg-tinta px-8 py-3 font-mono text-xs tracking-[0.12em] text-fundo disabled:cursor-not-allowed disabled:opacity-40"
-        >
+        <Button type="button" variant="primary" size="lg" onClick={salvar} disabled={salvando}>
           {salvando ? "SALVANDO…" : "SALVAR NOVA VERSÃO"}
-        </button>
+        </Button>
         <p className="text-sm text-tinta4">
-          Salvar cria uma nova apresentação no histórico — a original permanece intacta. Edições não
-          consomem sua cota diária de geração.
+          Salvar cria uma nova apresentação no histórico — a original permanece intacta.
         </p>
       </div>
 
       <div className="min-w-0 lg:sticky lg:top-8 lg:self-start">
-        <DeckPreview html={htmlPreview} htmlExport={html} titulo={deck.titulo} slideAtivo={idx} />
+        {/* Modo controlado: as setas abaixo do deck e a lista de slides do
+            painel mexem no mesmo índice (idx) — sempre em sincronia. */}
+        <DeckPreview
+          html={html}
+          titulo={deck.titulo}
+          navegavel
+          slideAtivo={idx}
+          onSlideChange={setIdx}
+        />
       </div>
 
       {toast ? <Toast message={toast} onClose={() => setToast(null)} /> : null}

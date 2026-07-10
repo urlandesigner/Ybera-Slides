@@ -38,30 +38,36 @@ export function VisibilityToggle({ deckId, inicial }: { deckId: string; inicial:
   }
 
   return (
-    <div className="flex items-center gap-3">
-      <span className="font-mono text-[10px] tracking-[0.14em] text-tinta4">VISIBILIDADE</span>
-      <div role="radiogroup" aria-label="Visibilidade" className="flex items-center rounded-full border border-fio18">
-        {OPCOES.map((opt) => (
-          <button
-            key={opt.value}
-            type="button"
-            role="radio"
-            aria-checked={valor === opt.value}
-            disabled={salvando}
-            onClick={() => mudar(opt.value)}
-            className={
-              valor === opt.value
-                ? "rounded-full bg-tinta px-3 py-1 font-mono text-[10px] tracking-[0.12em] text-fundo transition-colors"
-                : "rounded-full px-3 py-1 font-mono text-[10px] tracking-[0.12em] text-tinta4 transition-colors hover:text-tinta2 disabled:opacity-50"
-            }
-          >
-            {opt.label}
-          </button>
-        ))}
+    <div className="flex flex-col gap-3">
+      <span className="font-mono text-xs tracking-[0.14em] text-tinta3">VISIBILIDADE</span>
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Pílulas no mesmo padrão do BrandPicker (marca/modo) */}
+        <div role="radiogroup" aria-label="Visibilidade" className="flex flex-wrap gap-2">
+          {OPCOES.map((opt) => {
+            const selecionada = valor === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                role="radio"
+                aria-checked={selecionada}
+                disabled={salvando}
+                onClick={() => mudar(opt.value)}
+                className={
+                  selecionada
+                    ? "rounded-full border border-fio25 bg-tinta px-5 py-2 font-mono text-xs tracking-[0.12em] text-fundo transition-colors disabled:opacity-50"
+                    : "rounded-full border border-fio18 px-5 py-2 font-mono text-xs tracking-[0.12em] text-tinta3 transition-colors hover:border-fio25 hover:text-tinta2 disabled:opacity-50"
+                }
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+        <span className="text-xs text-tinta4">
+          {valor === "publica" ? "Visível pra toda a equipe" : "Só você vê"}
+        </span>
       </div>
-      <span className="text-xs text-tinta4">
-        {valor === "publica" ? "Visível no repositório da equipe" : "Só você vê"}
-      </span>
       {toast ? <Toast message={toast} onClose={() => setToast(null)} /> : null}
     </div>
   );

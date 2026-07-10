@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 // Rotas acessíveis sem sessão
-const PUBLIC_PATHS = ["/login", "/auth", "/api/auth"];
+const PUBLIC_PATHS = ["/login", "/auth", "/api/auth", "/teste-links"];
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -45,7 +45,7 @@ export async function updateSession(request: NextRequest) {
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    url.searchParams.set("erro", "sessao");
+    url.searchParams.delete("erro");
     return NextResponse.redirect(url);
   }
 
