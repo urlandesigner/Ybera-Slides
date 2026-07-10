@@ -143,7 +143,7 @@ export const briefingSchema = z.object({
   modo: modoSchema,
   assunto: z.string().min(3, "Descreva o assunto da apresentação"),
   publico: z.string().min(3, "Descreva o público-alvo").default("Equipe interna"),
-  numSlides: z.union([z.literal(5), z.literal(10), z.literal(15), z.literal(20)]),
+  numSlides: z.union([z.literal(5), z.literal(10), z.literal(15), z.literal(20), z.literal("auto")]),
   conteudo: z.string().trim().min(1, "Cole o conteúdo a cobrir — pontos, dados e fatos"),
 });
 

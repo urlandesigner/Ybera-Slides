@@ -79,7 +79,7 @@ function briefingToPrompt(briefing: Briefing): string {
 - Modo: ${briefing.modo}
 - Assunto: ${briefing.assunto}
 - Público: ${briefing.publico}
-- Número aproximado de slides: ${briefing.numSlides}
+- Número aproximado de slides: ${briefing.numSlides === "auto" ? "sem alvo fixo — decida com base no volume e na natureza do conteúdo, tipicamente entre 8 e 15" : briefing.numSlides}
 
 ## Conteúdo a cobrir (única fonte de fatos, dados e números — não invente nada além disto)
 

@@ -24,11 +24,12 @@ const MODOS: { value: Modo; label: string }[] = [
   { value: "light", label: "LIGHT" },
 ];
 
-const TAMANHOS: { value: 5 | 10 | 15 | 20; label: string }[] = [
+const TAMANHOS: { value: 5 | 10 | 15 | 20 | "auto"; label: string }[] = [
   { value: 5, label: "5" },
   { value: 10, label: "10" },
   { value: 15, label: "15" },
   { value: 20, label: "20+" },
+  { value: "auto", label: "VOCÊ DECIDE" },
 ];
 
 const VISIBILIDADES: { value: Visibilidade; label: string }[] = [
@@ -44,7 +45,7 @@ export function GeneratorClient() {
   const [marca, setMarca] = useState<Marca>("group");
   const [modo, setModo] = useState<Modo>("dark");
   const [assunto, setAssunto] = useState("");
-  const [numSlides, setNumSlides] = useState<5 | 10 | 15 | 20>(10);
+  const [numSlides, setNumSlides] = useState<5 | 10 | 15 | 20 | "auto">(10);
   const [conteudo, setConteudo] = useState("");
   const [visibilidade, setVisibilidade] = useState<Visibilidade>("publica");
 
