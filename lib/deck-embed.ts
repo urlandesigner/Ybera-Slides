@@ -36,6 +36,16 @@ export function ajustarHtmlParaEmbutir(
       "<script>(function(){",
       "function total(){return document.querySelectorAll('#stage .slide').length;}",
       "function avisar(){try{parent.postMessage({tipo:'deck-total',total:total()},'*');}catch(e){}}",
+      // O próprio deck navega por teclado e por clique chamando mostrar() direto,
+      // sem passar pela ponte — por isso embrulhamos mostrar() pra avisar o pai
+      // depois de QUALQUER chamada, não só a que veio do postMessage abaixo.
+      "if(typeof mostrar==='function'){",
+      "var mostrarOriginal=mostrar;",
+      "mostrar=function(i){",
+      "mostrarOriginal(i);",
+      "try{parent.postMessage({tipo:'slide-mudou',indice:atual},'*');}catch(e){}",
+      "};",
+      "}",
       "window.addEventListener('message',function(e){",
       "if(!e.data)return;",
       "if(e.data.tipo==='ir-para-slide'&&typeof mostrar==='function'){mostrar(e.data.indice);}",

@@ -65,7 +65,10 @@ export function DeckPreview({
     setIdxInterno(0);
   }, [html]);
 
-  // A ponte injetada no iframe reporta quantos slides existem
+  // A ponte injetada no iframe reporta quantos slides existem, e também
+  // qualquer troca de slide feita de dentro do iframe (clique ou teclado do
+  // próprio deck) — sem isso, o contador/paginação externos ficam desalinhados
+  // do slide realmente exibido.
   useEffect(() => {
     if (!navegavel) return;
     function aoReceber(e: MessageEvent) {
@@ -73,10 +76,17 @@ export function DeckPreview({
       if (e.data?.tipo === "deck-total" && typeof e.data.total === "number") {
         setTotal(Math.max(1, e.data.total));
       }
+      if (e.data?.tipo === "slide-mudou" && typeof e.data.indice === "number") {
+        if (controlado) {
+          onSlideChange?.(e.data.indice);
+        } else {
+          setIdxInterno(e.data.indice);
+        }
+      }
     }
     window.addEventListener("message", aoReceber);
     return () => window.removeEventListener("message", aoReceber);
-  }, [navegavel]);
+  }, [navegavel, controlado, onSlideChange]);
 
   const irPara = useCallback(
     (n: number) => {
