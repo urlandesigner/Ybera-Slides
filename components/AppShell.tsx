@@ -12,7 +12,7 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen">
+    <div className="flex min-h-screen flex-col">
       <header className="border-b border-fio">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-5 py-4 sm:gap-4 sm:px-6 sm:py-5">
           <Link href="/" className="flex items-center text-tinta">
@@ -32,7 +32,7 @@ export function AppShell({
           </div>
         </div>
       </header>
-      <main className="surgir mx-auto max-w-5xl px-5 py-8 sm:px-6 sm:py-12">{children}</main>
+      <main className="surgir mx-auto w-full max-w-5xl flex-1 px-5 py-8 sm:px-6 sm:py-12">{children}</main>
       <footer className="border-t border-fio">
         <div className="mx-auto max-w-5xl px-5 py-6 sm:px-6">
           <p className="font-mono text-xs tracking-[0.1em] text-tinta4">
