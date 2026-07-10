@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BrandPicker } from "@/components/BrandPicker";
-import { PageHeader } from "@/components/AppShell";
 import { Button } from "@/components/Button";
 import { Field, inputClass } from "@/components/Field";
 import { Toast } from "@/components/Toast";
@@ -179,17 +178,19 @@ export function GeneratorClient() {
   }
 
   return (
-    <div className="flex max-w-2xl flex-col gap-9">
-      <Link
-        href="/"
-        className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.12em] text-tinta4 transition-colors hover:text-tinta3"
-      >
-        ← APRESENTAÇÕES
-      </Link>
-      <PageHeader
-        titulo="Nova apresentação"
-        descricao="Preencha o briefing e receba um HTML no padrão visual Ybera, pronto para apresentar."
-      />
+    <div className="max-w-2xl">
+      <div className="mb-8 flex flex-col gap-2">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.12em] text-tinta4 transition-colors hover:text-tinta3"
+        >
+          ← APRESENTAÇÕES
+        </Link>
+        <h1 className="font-display text-4xl font-semibold tracking-tight">Nova apresentação</h1>
+        <p className="text-tinta3">
+          Preencha o briefing e receba um HTML no padrão visual Ybera, pronto para apresentar.
+        </p>
+      </div>
       <form
         onSubmit={(e) => {
           e.preventDefault();
