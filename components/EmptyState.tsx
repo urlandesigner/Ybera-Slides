@@ -12,7 +12,7 @@ export function EmptyState({
   href: string;
 }) {
   return (
-    <div className="flex flex-col items-start gap-4 rounded-xl border border-fio18 bg-painel px-5 py-10 [box-shadow:var(--sombra-card)] sm:px-8 sm:py-12">
+    <div className="flex flex-col items-start gap-4 rounded-xl border border-fio-card bg-painel px-5 py-10 [box-shadow:var(--sombra-card)] sm:px-8 sm:py-12">
       <h2 className="font-display text-2xl">{titulo}</h2>
       <p className="max-w-md text-tinta3">{texto}</p>
       <Button href={href} variant="primary" className="mt-2">

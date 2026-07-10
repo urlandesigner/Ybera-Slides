@@ -37,7 +37,7 @@ export function DeckListItem({
   return (
     <Link
       href={`/deck/${id}`}
-      className="card-sombra flex flex-col overflow-hidden rounded-xl border border-fio18 bg-painel hover:border-fio25"
+      className="card-sombra flex flex-col overflow-hidden rounded-xl border border-fio-card bg-painel hover:border-fio25"
     >
       {/* A capa é sempre o primeiro slide — o próprio HTML do deck se auto-escala pro tamanho do iframe. */}
       <iframe

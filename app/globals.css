@@ -36,6 +36,7 @@
   --color-fio: rgba(255, 255, 255, 0.08);
   --color-fio18: rgba(255, 255, 255, 0.18);
   --color-fio25: rgba(255, 255, 255, 0.3);
+  --color-fio-card: rgba(255, 255, 255, 0.18); /* borda de cards grandes — igual a fio18 no dark */
   --color-erro: #e06666; /* destructive (dark) — fora da rampa neutra */
 
   /* Acentos por marca — identidade de produto, fora do escopo da paleta neutra */
@@ -85,6 +86,7 @@
   --color-fio: var(--color-black-300); /* #d6d6d6 — hairline mais suave */
   --color-fio18: var(--color-black-400); /* #a5a5a5 — border */
   --color-fio25: var(--color-black-500); /* #767676 — hairline mais forte */
+  --color-fio-card: var(--color-black-300); /* #d6d6d6 — borda de cards grandes, mais sutil que fio18 */
   --color-erro: #cc3333; /* destructive (light) — fora da rampa neutra */
 
   /* Sombra suave de card (float), estilo da referência: difusa, y baixo, opacidade baixa */

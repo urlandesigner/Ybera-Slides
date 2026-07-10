@@ -140,7 +140,7 @@ export function DeckPreview({
         srcDoc={ajustarHtmlParaEmbutir(html, navegavel ? { esconderContador: true, comPonte: true } : {})}
         onLoad={() => postar(indice)}
         title={`Preview: ${titulo}`}
-        className="aspect-video w-full rounded-xl border border-fio18 bg-fundo [box-shadow:var(--sombra-card)]"
+        className="aspect-video w-full rounded-xl border border-fio-card bg-fundo [box-shadow:var(--sombra-card)]"
       />
       {navegavel ? (
         <div className="flex items-center justify-center gap-4 pt-1">
