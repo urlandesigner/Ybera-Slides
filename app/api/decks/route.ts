@@ -55,6 +55,7 @@ export async function POST(request: Request) {
     .from("decks")
     .select("briefing, visibilidade, user_id")
     .eq("id", body.sourceId)
+    .is("deleted_at", null)
     .single();
   if (!origem) {
     return NextResponse.json({ erro: "Apresentação de origem não encontrada", codigo: "interno" }, { status: 404 });

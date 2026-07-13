@@ -17,6 +17,7 @@ export default async function DeckPage({ params }: { params: Promise<{ id: strin
     .from("decks")
     .select("id, titulo, marca, autor_email, created_at, html, user_id, visibilidade")
     .eq("id", id)
+    .is("deleted_at", null)
     .single();
 
   // Restritas de outra pessoa nem chegam aqui — o RLS não retorna a linha

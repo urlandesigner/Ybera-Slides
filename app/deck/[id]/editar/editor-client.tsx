@@ -142,6 +142,8 @@ export function EditorClient({
   const [deck, setDeck] = useState(deckInicial);
   const [idx, setIdx] = useState(0);
   const [salvando, setSalvando] = useState(false);
+  const [excluindo, setExcluindo] = useState(false);
+  const [confirmandoExclusao, setConfirmandoExclusao] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
   const html = useMemo(() => renderDeck(deck), [deck]);
@@ -174,6 +176,35 @@ export function EditorClient({
       setToast("Falha de rede ao salvar. Suas edições continuam nesta tela — tente de novo.");
     } finally {
       setSalvando(false);
+    }
+  }
+
+  async function excluir() {
+    // Primeiro clique só arma a confirmação — desarma sozinha em 4s.
+    if (!confirmandoExclusao) {
+      setConfirmandoExclusao(true);
+      setTimeout(() => setConfirmandoExclusao(false), 4000);
+      return;
+    }
+    setExcluindo(true);
+    try {
+      const res = await fetch(`/api/decks/${sourceId}`, { method: "DELETE" });
+      if (res.ok) {
+        router.push("/?filtro=minhas");
+        return;
+      }
+      if (res.status === 401) {
+        window.location.href = "/login";
+        return;
+      }
+      const body = await res.json().catch(() => null);
+      setToast(body?.erro ?? "Não foi possível excluir a apresentação");
+      setConfirmandoExclusao(false);
+    } catch {
+      setToast("Falha de rede ao excluir. Tente de novo.");
+      setConfirmandoExclusao(false);
+    } finally {
+      setExcluindo(false);
     }
   }
 
@@ -247,6 +278,17 @@ export function EditorClient({
         <p className="text-sm text-tinta4">
           Salvar cria uma nova apresentação no histórico — a original permanece intacta.
         </p>
+
+        <div className="flex flex-col gap-3 border-t border-fio pt-6">
+          <Button type="button" variant="danger" size="lg" onClick={excluir} disabled={excluindo || salvando}>
+            {excluindo
+              ? "EXCLUINDO…"
+              : confirmandoExclusao
+                ? "CLIQUE DE NOVO PRA EXCLUIR"
+                : "EXCLUIR APRESENTAÇÃO"}
+          </Button>
+          <p className="text-sm text-tinta4">A apresentação sai do site pra todo mundo.</p>
+        </div>
       </div>
 
       <div className="min-w-0 lg:sticky lg:top-8 lg:self-start">

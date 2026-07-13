@@ -24,6 +24,7 @@ export async function buscarDecks(
   const query = supabase
     .from("decks")
     .select("id, titulo, marca, modo, slides, autor_email, created_at, visibilidade")
+    .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .limit(200);
 

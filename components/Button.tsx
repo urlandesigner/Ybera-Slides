@@ -4,6 +4,7 @@ import type { ComponentProps } from "react";
 const VARIANTS = {
   primary: "border border-fio25 bg-tinta text-fundo hover:opacity-90",
   secondary: "border border-fio18 text-tinta3 hover:border-fio25 hover:text-tinta2",
+  danger: "border border-erro/50 text-erro hover:border-erro",
 } as const;
 
 const SIZES = {

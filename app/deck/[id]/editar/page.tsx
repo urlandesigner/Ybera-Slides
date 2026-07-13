@@ -17,6 +17,7 @@ export default async function EditarDeckPage({ params }: { params: Promise<{ id:
     .from("decks")
     .select("id, titulo, marca, modo, slides, visibilidade, user_id")
     .eq("id", id)
+    .is("deleted_at", null)
     .single();
   if (!row) notFound();
   // Editar é ação de dono — visualizar/baixar continuam livres pra apresentações públicas.
