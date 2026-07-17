@@ -32,8 +32,7 @@ export async function GET(request: Request) {
   return NextResponse.json({ decks });
 }
 
-// Salva um deck editado como NOVA versão no histórico (o original é imutável).
-// Não chama a IA e não conta no limite diário de gerações (origem = 'edicao').
+// Salva as alterações no próprio deck. Não cria versões nem chama a IA.
 export async function POST(request: Request) {
   const supabase = await createClient();
   const {
@@ -50,17 +49,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ erro: "Conteúdo editado inválido", codigo: "briefing" }, { status: 400 });
   }
 
-  // Herda briefing e visibilidade do deck de origem
+  // Confirma que o deck existe e pertence à pessoa autenticada.
   const { data: origem } = await supabase
     .from("decks")
-    .select("briefing, visibilidade, user_id")
+    .select("user_id")
     .eq("id", body.sourceId)
     .is("deleted_at", null)
     .single();
   if (!origem) {
     return NextResponse.json({ erro: "Apresentação de origem não encontrada", codigo: "interno" }, { status: 404 });
   }
-  // Editar é ação de dono — mesmo apresentações públicas só o autor pode salvar nova versão.
+  // Editar é ação de dono — mesmo apresentações públicas só o autor pode salvar.
   if (origem.user_id !== user.id) {
     return NextResponse.json(
       { erro: "Você não tem permissão para editar esta apresentação", codigo: "permissao" },
@@ -73,23 +72,21 @@ export async function POST(request: Request) {
 
   const { data: saved, error } = await supabase
     .from("decks")
-    .insert({
-      user_id: user.id,
-      autor_email: user.email ?? "",
+    .update({
       titulo: body.deck.titulo,
       marca: body.deck.marca,
       modo: body.deck.modo,
-      briefing: origem.briefing,
       slides: body.deck.slides,
       html,
-      origem: "edicao",
-      visibilidade: origem.visibilidade,
     })
+    .eq("id", body.sourceId)
+    .eq("user_id", user.id)
+    .is("deleted_at", null)
     .select("id")
     .single();
   if (error || !saved) {
-    console.error("[decks] erro ao salvar versão editada:", error?.message);
-    return NextResponse.json({ erro: "Não foi possível salvar a nova versão", codigo: "interno" }, { status: 500 });
+    console.error("[decks] erro ao salvar alterações:", error?.message);
+    return NextResponse.json({ erro: "Não foi possível salvar as alterações", codigo: "interno" }, { status: 500 });
   }
 
   return NextResponse.json({ id: saved.id });

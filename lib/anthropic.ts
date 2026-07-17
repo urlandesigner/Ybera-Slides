@@ -27,11 +27,11 @@ type Slide =
   | { layout: "capa"; titulo: string; subtitulo: string; apresentador: string; data: string }            // data ex: "JULHO · 2026"
   | { layout: "indice"; titulo: string; itens: { numero: string; titulo: string; descricao: string }[] } // 2 a 4 itens; numero ex: "01"
   | { layout: "separador"; numero: string; titulo: string; linha: string }
-  | { layout: "conteudo"; kicker: string; titulo: string; paragrafos: string[]; imagemDescricao: string } // 1-2 parágrafos
+  | { layout: "conteudo"; kicker: string; titulo: string; paragrafos: string[]; imagemDescricao: string; imagemUrl: null; usarImagem: true } // 1-2 parágrafos; imagemUrl sempre null (upload só no editor)
   | { layout: "texto"; kicker: string; afirmacao: string; apoio: string | null }
-  | { layout: "imagem"; kicker: string; legenda: string; imagemDescricao: string }
+  | { layout: "imagem"; kicker: string; legenda: string; imagemDescricao: string; imagemUrl: null; usarImagem: true }
   | { layout: "citacao"; frase: string; autor: string; fonte: string }
-  | { layout: "cards"; kicker: string; titulo: string; cards: { titulo: string; texto: string }[] }       // exatamente 3
+  | { layout: "cards"; kicker: string; titulo: string; cards: { titulo: string; texto: string }[] }       // 1 a 5 cards
   | { layout: "metricas"; kicker: string; titulo: string; metricas: { valor: string; rotulo: string; contexto: string | null }[] } // exatamente 4
   | { layout: "timeline"; kicker: string; titulo: string; marcos: { rotulo: string; titulo: string; texto: string }[] }            // exatamente 4; o 4º usa marcador vazado/tracejado (futuro/planejado)
   | { layout: "comparativo"; kicker: string; titulo: string; antesRotulo: string; antesItens: string[]; depoisRotulo: string; depoisItens: string[] } // 3 itens cada
@@ -42,11 +42,11 @@ type Slide =
 1. capa — sempre o PRIMEIRO slide. Título forte, subtítulo com contexto/tema/público, nome do apresentador e data em caixa alta no formato "MÊS · ANO".
 2. indice — sempre o SEGUNDO slide. 2 a 4 itens que espelham as seções da apresentação (numero "01", "02"...). titulo curto tipo "O que vamos ver".
 3. separador — abre cada seção. numero da seção ("01", "02"...), titulo é o nome da seção, linha é uma frase sobre o que vem na seção.
-4. conteudo — o layout de trabalho: texto à esquerda + imagem à direita. Use para explicar um tópico. imagemDescricao descreve a imagem ideal (vira placeholder).
+4. conteudo — o layout de trabalho: texto à esquerda + imagem à direita. Use para explicar um tópico. imagemDescricao descreve a imagem ideal (vira placeholder). imagemUrl deve ser sempre null. usarImagem deve ser sempre true.
 5. texto — uma afirmação central grande, sem imagem. Use para a ideia-chave de uma seção, uma tese, uma conclusão parcial. apoio é opcional (null se a afirmação bastar sozinha).
-6. imagem — imagem em destaque full-bleed com legenda. Use quando a imagem É a mensagem (produto, resultado visual, foto de evento).
+6. imagem — imagem em destaque full-bleed com legenda. Use quando a imagem É a mensagem (produto, resultado visual, foto de evento). imagemUrl deve ser sempre null. usarImagem deve ser sempre true.
 7. citacao — frase curta e memorável com autor e fonte. Use APENAS se o briefing fornecer uma citação real.
-8. cards — exatamente 3 pontos paralelos (pilares, benefícios, frentes de trabalho).
+8. cards — 1 a 5 pontos paralelos (pilares, benefícios, frentes de trabalho). Prefira 3 quando couber; use 4–5 só se o briefing pedir muitos itens distintos.
 9. metricas — exatamente 4 números em destaque. valor curto ("128%", "4,2x", "R$ 12M"), rotulo em CAIXA ALTA, contexto é uma linha opcional. Use APENAS se o briefing fornecer os números.
 10. timeline — exatamente 4 marcos cronológicos. rotulo em caixa alta ("JAN 2026"), o 4º marco representa o passo futuro/planejado.
 11. comparativo — antes/depois ou atual/proposto, 3 itens de cada lado. Rótulos em caixa alta ("ANTES"/"DEPOIS", "HOJE"/"COM O PROJETO").
@@ -156,7 +156,7 @@ export async function generateDeck(briefing: Briefing): Promise<Deck> {
     try {
       deck = await callOnce(
         client,
-        `${userPrompt}\n\n## Atenção\n\nSua resposta anterior violou o contrato JSON (${detalhe.slice(0, 500)}). Gere novamente respeitando exatamente o contrato: cards = 3 itens, metricas = 4, timeline = 4 marcos, comparativo = 3 itens de cada lado.`
+        `${userPrompt}\n\n## Atenção\n\nSua resposta anterior violou o contrato JSON (${detalhe.slice(0, 500)}). Gere novamente respeitando exatamente o contrato: cards = 1 a 5 itens, metricas = 4, timeline = 4 marcos, comparativo = 3 itens de cada lado.`
       );
     } catch {
       throw new GenerationError(
@@ -169,6 +169,12 @@ export async function generateDeck(briefing: Briefing): Promise<Deck> {
   // Marca e modo são decisões do formulário, não da IA
   deck.marca = briefing.marca;
   deck.modo = briefing.modo;
+  // Foto só via upload no editor — nunca aceite URL inventada pela IA
+  deck.slides = deck.slides.map((s) =>
+    s.layout === "conteudo" || s.layout === "imagem"
+      ? { ...s, imagemUrl: null, usarImagem: true }
+      : s
+  );
 
   const check = deckSchema.safeParse(deck);
   if (!check.success) {

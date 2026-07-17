@@ -31,9 +31,11 @@ const sample: Deck = {
         "Isso abre espaço para uma estratégia de duas pontas sem canibalizar o salão.",
       ],
       imagemDescricao: "foto de salão parceiro",
+      imagemUrl: null,
+      usarImagem: true,
     },
     { layout: "texto", kicker: "01 · CONTEXTO", afirmacao: "Crescer no varejo sem perder o salão é a tese central deste plano.", apoio: "Cada frente descrita aqui protege uma das duas pontas." },
-    { layout: "imagem", kicker: "01 · CONTEXTO", legenda: "Nova linha em gôndola — piloto de Campinas", imagemDescricao: "foto da gôndola do piloto" },
+    { layout: "imagem", kicker: "01 · CONTEXTO", legenda: "Nova linha em gôndola — piloto de Campinas", imagemDescricao: "foto da gôndola do piloto", imagemUrl: null, usarImagem: true },
     { layout: "citacao", frase: "O salão indica, o varejo converte — as duas pontas se alimentam.", autor: "Carlos Mendes", fonte: "Diretor Comercial, kickoff 2026" },
     { layout: "separador", numero: "02", titulo: "Resultados", linha: "Números do último semestre" },
     {

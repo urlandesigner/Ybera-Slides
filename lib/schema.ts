@@ -27,12 +27,20 @@ export const separadorSchema = z.object({
   linha: z.string(),
 });
 
+// URL pública da foto (upload no editor). Ausente/null = placeholder listrado.
+// Sem .transform — o schema também alimenta z.toJSONSchema na geração com IA.
+const imagemUrlSchema = z.union([z.string().url(), z.null()]).optional();
+// false = esconde o slot (sem placeholder). Ausente = true (compat decks antigos).
+const usarImagemSchema = z.boolean().optional();
+
 export const conteudoSchema = z.object({
   layout: z.literal("conteudo"),
   kicker: z.string(),
   titulo: z.string(),
   paragrafos: z.array(z.string()).min(1).max(2),
   imagemDescricao: z.string(),
+  imagemUrl: imagemUrlSchema,
+  usarImagem: usarImagemSchema,
 });
 
 export const textoSchema = z.object({
@@ -47,6 +55,8 @@ export const imagemSchema = z.object({
   kicker: z.string(),
   legenda: z.string(),
   imagemDescricao: z.string(),
+  imagemUrl: imagemUrlSchema,
+  usarImagem: usarImagemSchema,
 });
 
 export const citacaoSchema = z.object({
@@ -60,7 +70,7 @@ export const cardsSchema = z.object({
   layout: z.literal("cards"),
   kicker: z.string(),
   titulo: z.string(),
-  cards: z.array(z.object({ titulo: z.string(), texto: z.string() })).length(3),
+  cards: z.array(z.object({ titulo: z.string(), texto: z.string() })).min(1).max(5),
 });
 
 export const metricasSchema = z.object({

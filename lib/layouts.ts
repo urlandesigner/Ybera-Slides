@@ -94,6 +94,17 @@ function renderSeparador(s: Extract<Slide, { layout: "separador" }>): string {
 </section>`;
 }
 
+function renderImageSlot(descricao: string, url: string | null | undefined): string {
+  if (url) {
+    return `<div class="img-media"><img src="${e(url)}" alt="${e(descricao)}" /></div>`;
+  }
+  return `<div class="img-placeholder"><span>${e(descricao)}</span></div>`;
+}
+
+function usaImagem(s: { usarImagem?: boolean }): boolean {
+  return s.usarImagem !== false;
+}
+
 function renderConteudo(s: Extract<Slide, { layout: "conteudo" }>): string {
   const paragrafos = s.paragrafos
     .map((p, i) =>
@@ -102,6 +113,20 @@ function renderConteudo(s: Extract<Slide, { layout: "conteudo" }>): string {
         : `        <p class="f-body" style="margin: 0; font-size: 30px; line-height: 1.55; color: var(--ink3);">${e(p)}</p>`
     )
     .join("\n");
+
+  const corpo = usaImagem(s)
+    ? `    <div style="flex: 1; display: flex; gap: 96px; align-items: stretch; min-height: 0;">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 36px; justify-content: center; max-width: 780px;">
+${paragrafos}
+      </div>
+      <div style="flex: 1; display: flex; align-items: center;">
+        ${renderImageSlot(s.imagemDescricao, s.imagemUrl)}
+      </div>
+    </div>`
+    : `    <div style="flex: 1; display: flex; flex-direction: column; gap: 36px; justify-content: center; max-width: 1200px; min-height: 0;">
+${paragrafos}
+    </div>`;
+
   return `<section class="slide" data-layout="conteudo">
   <div class="frame" style="gap: 56px;">
     <div class="header-row">
@@ -109,14 +134,7 @@ function renderConteudo(s: Extract<Slide, { layout: "conteudo" }>): string {
       <span class="pagenum" data-pagina>00 / 00</span>
     </div>
     <h2 class="f-display" style="margin: 0; font-size: 76px; line-height: 1.08; color: var(--ink); max-width: 1200px; text-wrap: balance;">${e(s.titulo)}</h2>
-    <div style="flex: 1; display: flex; gap: 96px; align-items: stretch; min-height: 0;">
-      <div style="flex: 1; display: flex; flex-direction: column; gap: 36px; justify-content: center; max-width: 780px;">
-${paragrafos}
-      </div>
-      <div style="flex: 1; display: flex; align-items: center;">
-        <div class="img-placeholder"><span>${e(s.imagemDescricao)}</span></div>
-      </div>
-    </div>
+${corpo}
   </div>
 </section>`;
 }
@@ -141,11 +159,15 @@ function renderTexto(s: Extract<Slide, { layout: "texto" }>): string {
 function renderImagem(s: Extract<Slide, { layout: "imagem" }>): string {
   // O layout de referência não tem slot de kicker — o campo é aceito no contrato
   // mas não é renderizado, para manter a estrutura idêntica.
+  const slot = usaImagem(s)
+    ? `    <div style="flex: 1; min-height: 0;">
+      ${renderImageSlot(s.imagemDescricao, s.imagemUrl)}
+    </div>`
+    : `    <div style="flex: 1; min-height: 0;"></div>`;
+
   return `<section class="slide" data-layout="imagem">
   <div style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 64px 64px 48px 64px; box-sizing: border-box; gap: 32px;">
-    <div style="flex: 1; min-height: 0;">
-      <div class="img-placeholder"><span>${e(s.imagemDescricao)}</span></div>
-    </div>
+${slot}
     <div class="header-row" style="padding: 0 56px;">
       <span class="f-body" style="font-weight: 600; font-size: 28px; color: var(--ink);">${e(s.legenda)}</span>
       <span class="pagenum" data-pagina>00 / 00</span>
@@ -171,23 +193,29 @@ function renderCitacao(s: Extract<Slide, { layout: "citacao" }>): string {
 }
 
 function renderCards(s: Extract<Slide, { layout: "cards" }>): string {
+  const n = s.cards.length;
+  const gap = n >= 5 ? 24 : n === 4 ? 32 : 40;
+  const pad = n >= 5 ? 28 : n === 4 ? 36 : 40;
+  const tituloSize = n >= 5 ? 30 : n === 4 ? 34 : 36;
+  const textoSize = n >= 5 ? 22 : 24;
+
   const cards = s.cards
     .map(
-      (card, i) => `      <div style="border: 1px solid var(--line18); border-radius: 16px; padding: 48px; display: flex; flex-direction: column; gap: 24px;">
-        <span class="f-mono" style="font-size: 26px; color: var(--accent);">${String(i + 1).padStart(2, "0")}</span>
-        <span class="f-display" style="font-size: 40px; line-height: 1.15; color: var(--ink);">${e(card.titulo)}</span>
-        <span class="f-body" style="font-size: 25px; line-height: 1.5; color: var(--ink3);">${e(card.texto)}</span>
+      (card, i) => `      <div style="border: 1px solid var(--line18); border-radius: 16px; padding: ${pad}px; display: flex; flex-direction: column; gap: 16px; height: fit-content;">
+        <span class="f-mono" style="font-size: 24px; color: var(--accent);">${String(i + 1).padStart(2, "0")}</span>
+        <span class="f-display" style="font-size: ${tituloSize}px; line-height: 1.15; color: var(--ink);">${e(card.titulo)}</span>
+        <span class="f-body" style="font-size: ${textoSize}px; line-height: 1.45; color: var(--ink3);">${e(card.texto)}</span>
       </div>`
     )
     .join("\n");
   return `<section class="slide" data-layout="cards">
-  <div class="frame" style="gap: 64px;">
+  <div class="frame" style="gap: 56px;">
     <div class="header-row">
       <span class="kicker">${e(s.kicker)}</span>
       <span class="pagenum" data-pagina>00 / 00</span>
     </div>
     <h2 class="f-display" style="margin: 0; font-size: 72px; line-height: 1.08; color: var(--ink); max-width: 1200px;">${e(s.titulo)}</h2>
-    <div style="flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px;">
+    <div style="display: grid; grid-template-columns: repeat(${n}, 1fr); gap: ${gap}px; align-items: start;">
 ${cards}
     </div>
   </div>

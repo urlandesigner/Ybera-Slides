@@ -41,7 +41,7 @@ export default async function EditarDeckPage({ params }: { params: Promise<{ id:
           ← VOLTAR SEM SALVAR
         </Link>
         <h1 className="font-display text-4xl font-semibold tracking-tight">Editar apresentação</h1>
-        <p className="text-tinta3">Ajuste os textos — o preview atualiza na hora.</p>
+        <p className="text-tinta3">Ajuste textos e imagens — o preview atualiza na hora.</p>
       </div>
       <EditorClient
         deckInicial={parsed.data}
